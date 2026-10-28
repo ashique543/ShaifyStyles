@@ -1,0 +1,184 @@
+<!-- Top Navbar -->
+<app-navbar 
+  [selectedCategory]="selectedCategory()" 
+  (categoryChange)="onCategorySelect($event)">
+</app-navbar>
+
+<!-- Notification Toast -->
+@if (cartService.lastNotification(); as notif) {
+  <div class="toast-notification" [class]="'toast-' + notif.type">
+    <span class="toast-icon">
+      @if (notif.type === 'success') { ✓ } @else { ℹ }
+    </span>
+    <span>{{ notif.message }}</span>
+  </div>
+}
+
+<!-- Hero Section -->
+<app-hero (exploreClicked)="scrollToCatalog()"></app-hero>
+
+<!-- Main Catalog Section -->
+<main id="catalog" class="catalog-section">
+  <div class="container">
+    <!-- Catalog Header -->
+    <div class="catalog-header">
+      <div class="catalog-title-group">
+        <span class="catalog-pretitle">Handcrafted & Modest Wear</span>
+        <h2 class="catalog-title">
+          @if (selectedCategory() === 'All') {
+            Featured Boutique Catalog
+          } @else {
+            {{ selectedCategory() }}
+          }
+        </h2>
+      </div>
+
+      <!-- Controls Row: Filter Chips, Search, & Sort -->
+      <div class="catalog-controls-bar">
+        <!-- Filter Chips -->
+        <div class="category-chips">
+          @for (cat of categories; track cat.id) {
+            <button 
+              type="button" 
+              class="chip-btn" 
+              [class.active]="selectedCategory() === cat.id"
+              (click)="onCategorySelect(cat.id)">
+              <span class="chip-icon">{{ cat.icon }}</span>
+              <span>{{ cat.label }}</span>
+            </button>
+          }
+        </div>
+
+        <div class="search-sort-group">
+          <!-- Search Bar -->
+          <div class="search-input-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+              type="text" 
+              class="search-input" 
+              placeholder="Search lawn, farshi, hampers..."
+              [ngModel]="searchQuery()" 
+              (ngModelChange)="searchQuery.set($event); onSearchChange()"
+            />
+            @if (searchQuery()) {
+              <button type="button" class="clear-search-btn" (click)="searchQuery.set(''); onSearchChange()">×</button>
+            }
+          </div>
+
+          <!-- Sort Selector -->
+          <div class="sort-wrapper">
+            <select class="sort-select" [value]="selectedSort()" (change)="onSortChange($event)">
+              <option value="default">Featured</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="newest">Newest First</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Curating boutique collection...</p>
+      </div>
+    } @else if (products().length === 0) {
+      <div class="no-products-state">
+        <div class="empty-art">🔍</div>
+        <h3>No items found</h3>
+        <p>We couldn't find any products matching your search or filter. Try a different keyword or category.</p>
+        <button type="button" class="btn btn-primary" (click)="selectedCategory.set('All'); searchQuery.set(''); fetchProducts()">
+          Reset Filters
+        </button>
+      </div>
+    } @else {
+      <div class="product-grid">
+        @for (product of products(); track product.id) {
+          <app-product-card 
+            [product]="product" 
+            (viewDetails)="openProductDetails($event)">
+          </app-product-card>
+        }
+      </div>
+    }
+  </div>
+</main>
+
+<!-- Instagram Brand Showcase Strip -->
+<section class="insta-showcase-section">
+  <div class="container">
+    <div class="insta-header">
+      <div class="insta-tagline">
+        <span class="insta-badge">Instagram Gallery</span>
+        <h3>Follow our artisan journey &#64;shaifystyles_</h3>
+        <p>Watch daily hijab bouquet arrangements, Pakistani lawn styling tips, and custom hamper unboxings.</p>
+      </div>
+      <a 
+        href="https://instagram.com/shaifystyles_" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        class="btn btn-secondary insta-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
+        <span>Follow on Instagram</span>
+      </a>
+    </div>
+
+    <div class="insta-grid">
+      <div class="insta-card">
+        <img src="/assets/images/hijab_bouquet.jpg" alt="Shaify Styles Hijab Bouquet" onerror="this.src='https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=600&q=80'" />
+        <div class="insta-overlay">
+          <span>🌹 Blooming Rose Hijab Bouquet</span>
+        </div>
+      </div>
+      <div class="insta-card">
+        <img src="/assets/images/gift_hamper.jpg" alt="Shaify Styles Custom Hamper" onerror="this.src='https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=600&q=80'" />
+        <div class="insta-overlay">
+          <span>🎁 Bespoke Bride Keepsake Box</span>
+        </div>
+      </div>
+      <div class="insta-card">
+        <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80" alt="Embroidered Lawn Suit" />
+        <div class="insta-overlay">
+          <span>👗 Luxury Chiffon Lawn Suit</span>
+        </div>
+      </div>
+      <div class="insta-card">
+        <img src="/assets/images/hero_banner.jpg" alt="Shaify Styles Studio" onerror="this.src='https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=600&q=80'" />
+        <div class="insta-overlay">
+          <span>✨ Studio Curation & Orders</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modals & Drawers -->
+@if (selectedProduct()) {
+  <app-product-details-modal 
+    [product]="selectedProduct()" 
+    (close)="closeProductDetails()">
+  </app-product-details-modal>
+}
+
+<app-cart-drawer 
+  (orderConfirmed)="onOrderConfirmed($event)">
+</app-cart-drawer>
+
+@if (confirmedOrder()) {
+  <app-order-confirmation-modal 
+    [order]="confirmedOrder()" 
+    (close)="closeOrderConfirmation()">
+  </app-order-confirmation-modal>
+}
+
+<!-- Boutique Footer -->
+<app-footer></app-footer>

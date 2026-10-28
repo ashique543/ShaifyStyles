@@ -1,0 +1,322 @@
+/* Toast Notification */
+.toast-notification {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #252021;
+  color: #FFFFFF;
+  padding: 0.85rem 1.4rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(37, 32, 33, 0.25);
+  z-index: 2000;
+  animation: slideUp 0.3s ease-out;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.toast-notification.toast-success {
+  background: #1B5E20;
+}
+.toast-notification.toast-info {
+  background: #A3485E;
+}
+.toast-icon {
+  font-size: 1.1rem;
+}
+
+/* Catalog Section */
+.catalog-section {
+  padding: 4rem 0 3rem;
+}
+.catalog-header {
+  margin-bottom: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.catalog-title-group {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+.catalog-pretitle {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #A3485E;
+  font-weight: 700;
+}
+.catalog-title {
+  font-size: 2.4rem;
+  color: #252021;
+  position: relative;
+}
+.catalog-title::after {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 2px;
+  background: #C5A059;
+  margin: 0.6rem auto 0;
+}
+
+/* Controls Bar */
+.catalog-controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  background: #FFFFFF;
+  padding: 1rem 1.25rem;
+  border-radius: 16px;
+  border: 1px solid #E8DFD8;
+  box-shadow: 0 4px 14px rgba(37, 32, 33, 0.03);
+}
+
+/* Category Filter Chips */
+.category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+.chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #FAF7F2;
+  color: #594F52;
+  border: 1px solid #E8DFD8;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.chip-btn:hover {
+  background: #F9ECEF;
+  color: #A3485E;
+  border-color: #A3485E;
+}
+.chip-btn.active {
+  background: #A3485E;
+  color: #FFFFFF;
+  border-color: #A3485E;
+  box-shadow: 0 4px 12px rgba(163, 72, 94, 0.25);
+}
+.chip-icon {
+  font-size: 0.95rem;
+}
+
+/* Search and Sort Group */
+.search-sort-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 260px;
+}
+.search-icon {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: #8E8286;
+  pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  padding: 0.55rem 2rem 0.55rem 2.2rem;
+  border: 1px solid #E8DFD8;
+  border-radius: var(--radius-full);
+  background: #FAF7F2;
+  color: #252021;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+.search-input:focus {
+  outline: none;
+  border-color: #A3485E;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(163, 72, 94, 0.1);
+}
+.clear-search-btn {
+  position: absolute;
+  right: 10px;
+  font-size: 1.2rem;
+  color: #8E8286;
+  cursor: pointer;
+  background: none;
+}
+.sort-wrapper {
+  position: relative;
+}
+.sort-select {
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-full);
+  border: 1px solid #E8DFD8;
+  background: #FAF7F2;
+  color: #252021;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+.sort-select:focus {
+  border-color: #A3485E;
+}
+
+/* Product Grid */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+/* States */
+.loading-state, .no-products-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.loading-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid #E8DFD8;
+  border-top-color: #A3485E;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.empty-art {
+  font-size: 2.5rem;
+}
+.no-products-state h3 {
+  font-size: 1.4rem;
+  color: #252021;
+}
+.no-products-state p {
+  max-width: 440px;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Instagram Showcase Section */
+.insta-showcase-section {
+  background: #FAF3E6;
+  padding: 4.5rem 0;
+  border-top: 1px solid #E8DFD8;
+  border-bottom: 1px solid #E8DFD8;
+}
+.insta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.insta-badge {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #A37E36;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.35rem;
+}
+.insta-tagline h3 {
+  font-size: 1.8rem;
+  color: #252021;
+  margin-bottom: 0.35rem;
+}
+.insta-tagline p {
+  color: #594F52;
+  font-size: 0.95rem;
+  max-width: 600px;
+}
+.insta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-full);
+}
+.insta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+.insta-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  height: 280px;
+  box-shadow: 0 6px 18px rgba(37, 32, 33, 0.08);
+}
+.insta-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.insta-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(37, 32, 33, 0.8) 0%, rgba(37, 32, 33, 0) 50%);
+  display: flex;
+  align-items: flex-end;
+  padding: 1rem;
+  color: #FFFFFF;
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.95;
+  transition: opacity 0.3s;
+}
+.insta-card:hover img {
+  transform: scale(1.06);
+}
+
+@media (max-width: 900px) {
+  .insta-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .catalog-controls-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .search-input-wrapper {
+    width: 100%;
+  }
+  .search-sort-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  .sort-select {
+    width: 100%;
+  }
+  .insta-grid {
+    grid-template-columns: 1fr;
+  }
+  .catalog-title {
+    font-size: 1.8rem;
+  }
+}

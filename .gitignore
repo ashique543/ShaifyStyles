@@ -1,0 +1,50 @@
+# Node / Angular
+node_modules/
+frontend/node_modules/
+.angular/
+frontend/.angular/
+dist/
+frontend/dist/
+
+# Python
+__pycache__/
+*/__pycache__/
+*/**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+backend/env/
+backend/venv/
+backend/.venv/
+
+# Database & local runtime
+*.db
+*.sqlite3
+backend/*.db
+instance/
+backend/instance/
+
+# Secrets & Environment variables
+.env
+backend/.env
+frontend/.env
+*.env.local
+
+# Uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Logs & temp
+*.log
+npm-debug.log*
+
+# IDE / OS
+.vscode/
+frontend/.vscode/
+.idea/
+.DS_Store
+Thumbs.db
