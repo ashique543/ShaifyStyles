@@ -1,0 +1,233 @@
+@if (cartService.isCartOpen()) {
+  <div class="drawer-overlay" (click)="cartService.closeCart()">
+    <aside class="cart-drawer" (click)="$event.stopPropagation()">
+      <!-- Drawer Header -->
+      <div class="drawer-header">
+        <div class="header-title-group">
+          <h2 class="drawer-title">Shopping Bag</h2>
+          <span class="items-count">({{ cartService.totalCount() }} items)</span>
+        </div>
+        <button type="button" class="close-drawer-btn" (click)="cartService.closeCart()" aria-label="Close Bag">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Free Shipping Tracker -->
+      <div class="shipping-tracker">
+        <div class="tracker-text">
+          @if (cartService.isFreeShippingEligible()) {
+            <span class="free-shipping-success">🎉 Congratulations! You unlocked <strong>FREE Pan-India Shipping</strong></span>
+          } @else {
+            <span>Add <strong>₹{{ cartService.amountForFreeShipping() | number:'1.0-0' }}</strong> more for <strong>FREE Shipping</strong></span>
+          }
+        </div>
+        <div class="progress-bar-bg">
+          <div 
+            class="progress-bar-fill" 
+            [style.width.%]="getProgressPercentage()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Drawer Body: Either Empty Cart OR Items List & Checkout Form -->
+      <div class="drawer-content">
+        @if (cartService.items().length === 0) {
+          <div class="empty-cart-state">
+            <div class="empty-icon-circle">🛍️</div>
+            <h3>Your bag is empty</h3>
+            <p>Explore our handcrafted bouquets, Pakistani lawn suits, and bespoke hampers.</p>
+            <button type="button" class="btn btn-primary" (click)="cartService.closeCart()">
+              Browse Collections
+            </button>
+          </div>
+        } @else {
+          <!-- Step Indicator: Bag Items vs Shipping Details -->
+          <div class="checkout-tabs">
+            <button 
+              type="button" 
+              class="tab-btn" 
+              [class.active]="step() === 'items'"
+              (click)="step.set('items')">
+              1. Bag Items ({{ cartService.totalCount() }})
+            </button>
+            <button 
+              type="button" 
+              class="tab-btn" 
+              [class.active]="step() === 'shipping'"
+              (click)="proceedToShipping()">
+              2. Delivery & Payment
+            </button>
+          </div>
+
+          @if (step() === 'items') {
+            <!-- Items List -->
+            <div class="items-list">
+              @for (item of cartService.items(); track $index) {
+                <div class="cart-item-card">
+                  <img 
+                    [src]="item.product.image_url" 
+                    [alt]="item.product.title" 
+                    class="item-thumb"
+                    onerror="this.src='https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80'"
+                  />
+                  <div class="item-details">
+                    <div class="item-header-row">
+                      <h4 class="item-name">{{ item.product.title }}</h4>
+                      <button type="button" class="remove-btn" (click)="cartService.removeItem($index)" title="Remove item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <span class="item-size-pill">Size: {{ item.size }}</span>
+
+                    <div class="item-bottom-row">
+                      <div class="stepper-mini">
+                        <button type="button" (click)="cartService.updateQuantity($index, item.quantity - 1)">-</button>
+                        <span>{{ item.quantity }}</span>
+                        <button type="button" (click)="cartService.updateQuantity($index, item.quantity + 1)">+</button>
+                      </div>
+                      <span class="item-subtotal">₹{{ ((item.product.discounted_price ?? item.product.price) * item.quantity) | number:'1.0-0' }}</span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <!-- Shipping Address & Contact Form -->
+            <form class="shipping-form" (ngSubmit)="processCheckout()">
+              <div class="form-section-title">
+                <span>Contact Information</span>
+              </div>
+
+              <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" [(ngModel)]="customerName" name="customerName" placeholder="e.g. Aisha Khan" required />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>WhatsApp / Phone *</label>
+                  <input type="tel" [(ngModel)]="customerPhone" name="customerPhone" placeholder="10-digit mobile" required />
+                </div>
+                <div class="form-group">
+                  <label>Email Address *</label>
+                  <input type="email" [(ngModel)]="customerEmail" name="customerEmail" placeholder="aisha@example.com" required />
+                </div>
+              </div>
+
+              <div class="form-section-title">
+                <span>Delivery Address (Pan India)</span>
+              </div>
+
+              <div class="form-group">
+                <label>Street / Flat / House No. *</label>
+                <input type="text" [(ngModel)]="shippingStreet" name="shippingStreet" placeholder="e.g. Flat 301, Rose Residency, Bandra West" required />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>City *</label>
+                  <input type="text" [(ngModel)]="shippingCity" name="shippingCity" placeholder="Mumbai" required />
+                </div>
+                <div class="form-group">
+                  <label>PIN Code *</label>
+                  <input type="text" [(ngModel)]="shippingPincode" name="shippingPincode" placeholder="400050" required />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>State *</label>
+                <input type="text" [(ngModel)]="shippingState" name="shippingState" placeholder="Maharashtra" required />
+              </div>
+
+              <div class="form-group">
+                <label>Personalized Greeting Note / Custom Instructions (Optional)</label>
+                <textarea 
+                  [(ngModel)]="orderNotes" 
+                  name="orderNotes" 
+                  rows="2" 
+                  placeholder="e.g. 'Happy Birthday Amira! - from Zara' or custom bouquet ribbon colors">
+                </textarea>
+              </div>
+
+              <!-- Payment Mode Badge -->
+              <div class="payment-badge-box">
+                <div class="rzp-brand-row">
+                  <span class="rzp-label">Secured by <strong>Razorpay</strong></span>
+                  <span class="secure-icon">🔒 100% Secure Payment</span>
+                </div>
+                <p class="rzp-desc">Supports UPI (GPay, PhonePe, Paytm), Credit/Debit Cards, and NetBanking.</p>
+              </div>
+
+              @if (errorMessage()) {
+                <div class="error-banner">
+                  ⚠️ {{ errorMessage() }}
+                </div>
+              }
+            </form>
+          }
+        }
+      </div>
+
+      <!-- Drawer Footer: Summary & Checkout Button -->
+      @if (cartService.items().length > 0) {
+        <div class="drawer-footer">
+          <div class="summary-line">
+            <span class="label">Subtotal:</span>
+            <span class="val">₹{{ cartService.subtotal() | number:'1.0-0' }}</span>
+          </div>
+          <div class="summary-line">
+            <span class="label">Pan-India Delivery:</span>
+            <span class="val">
+              @if (cartService.isFreeShippingEligible()) {
+                <span class="free-text">FREE</span>
+              } @else {
+                <span>₹150</span>
+              }
+            </span>
+          </div>
+          <div class="summary-line total-line">
+            <span class="label">Total Amount:</span>
+            <span class="total-val">₹{{ finalTotal() | number:'1.0-0' }}</span>
+          </div>
+
+          @if (step() === 'items') {
+            <button type="button" class="btn btn-primary checkout-action-btn" (click)="proceedToShipping()">
+              <span>Proceed to Delivery & Payment</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          } @else {
+            <button 
+              type="button" 
+              class="btn btn-primary checkout-action-btn" 
+              [disabled]="isProcessing()"
+              (click)="processCheckout()">
+              @if (isProcessing()) {
+                <span class="spinner-inline"></span>
+                <span>Connecting Payment Gateway...</span>
+              } @else {
+                <span>Pay ₹{{ finalTotal() | number:'1.0-0' }} via Razorpay</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                  <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+              }
+            </button>
+            <button type="button" class="back-to-items-link" (click)="step.set('items')">
+              ← Back to Bag Items
+            </button>
+          }
+        </div>
+      }
+    </aside>
+  </div>
+}

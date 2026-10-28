@@ -1,0 +1,10 @@
+<div class="admin-layout-shell">
+  <app-admin-sidebar 
+    [collapsed]="sidebarCollapsed()" 
+    (toggleCollapse)="toggleSidebar()">
+  </app-admin-sidebar>
+
+  <main class="admin-main-viewport">
+    <router-outlet></router-outlet>
+  </main>
+</div>

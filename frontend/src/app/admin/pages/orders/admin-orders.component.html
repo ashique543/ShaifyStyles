@@ -1,0 +1,184 @@
+<app-admin-toasts #toasts></app-admin-toasts>
+
+<div class="admin-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Order Management</h1>
+      <p class="page-subtitle">{{ totalItems() }} total orders</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="search-wrapper">
+      <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" class="search-inp" [(ngModel)]="searchQuery" (input)="onSearch()" placeholder="Search by name, phone, or payment ID…" />
+    </div>
+    <select class="filter-select" [(ngModel)]="statusFilter" (change)="loadOrders()">
+      <option value="">All Statuses</option>
+      @for (s of statuses; track s) { <option [value]="s">{{ s | titlecase }}</option> }
+    </select>
+    <input type="date" class="filter-date" [(ngModel)]="dateFrom" (change)="loadOrders()" title="From date" />
+    <input type="date" class="filter-date" [(ngModel)]="dateTo" (change)="loadOrders()" title="To date" />
+    <button class="refresh-btn" (click)="loadOrders()">Refresh</button>
+  </div>
+
+  <!-- Table -->
+  @if (isLoading()) {
+    <div class="table-skeleton">
+      @for (_ of [1,2,3,4,5]; track $index) { <div class="row-skeleton"></div> }
+    </div>
+  } @else {
+    <div class="table-card">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Phone</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Carrier</th>
+              <th>Tracking No.</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (o of orders(); track o.id) {
+              <tr [class.highlighted]="selectedOrder()?.id === o.id">
+                <td><span class="order-id">#SS-{{ o.id }}</span></td>
+                <td>
+                  <div class="cust-cell">
+                    <strong>{{ o.customer_name }}</strong>
+                    <small>{{ o.customer_email }}</small>
+                  </div>
+                </td>
+                <td><a [href]="'tel:' + o.customer_phone" class="phone-link">{{ o.customer_phone }}</a></td>
+                <td>
+                  <span class="items-count-badge">{{ o.items.length }} {{ o.items.length === 1 ? 'item' : 'items' }}</span>
+                </td>
+                <td><strong>₹{{ o.total_amount | number:'1.0-0' }}</strong></td>
+                <td>
+                  <span class="status-badge" [class]="getStatusClass(o.status)">
+                    {{ o.status | titlecase }}
+                  </span>
+                </td>
+                <td>{{ o.tracking_carrier || '—' }}</td>
+                <td>
+                  <span class="tracking-num">{{ o.tracking_number || '—' }}</span>
+                </td>
+                <td><small>{{ o.created_at | date:'MMM d, h:mm a' }}</small></td>
+                <td>
+                  <button class="btn-manage" (click)="selectOrder(o)">Manage</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Slide-in Order Details & Fulfillment Panel -->
+@if (selectedOrder()) {
+  <div class="panel-backdrop" (click)="selectedOrder.set(null)">
+    <div class="order-detail-panel" (click)="$event.stopPropagation()">
+      <div class="panel-header">
+        <div>
+          <span class="panel-tag">Order Details</span>
+          <h2 class="panel-title">#SS-{{ selectedOrder()!.id }}</h2>
+        </div>
+        <button class="btn-close" (click)="selectedOrder.set(null)">✕</button>
+      </div>
+
+      <!-- Customer Summary -->
+      <section class="panel-section">
+        <h3 class="section-title">Customer Information</h3>
+        <div class="detail-grid">
+          <div><label>Name:</label> <span>{{ selectedOrder()!.customer_name }}</span></div>
+          <div><label>Phone:</label> <a [href]="'tel:' + selectedOrder()!.customer_phone">{{ selectedOrder()!.customer_phone }}</a></div>
+          <div><label>Email:</label> <span>{{ selectedOrder()!.customer_email }}</span></div>
+          <div><label>Order Date:</label> <span>{{ selectedOrder()!.created_at | date:'medium' }}</span></div>
+        </div>
+        <div class="address-box">
+          <label>Shipping Address:</label>
+          <p>{{ selectedOrder()!.shipping_address }}</p>
+        </div>
+        @if (selectedOrder()!.notes) {
+          <div class="cust-note">
+            <label>Customer Request / Ribbon Note:</label>
+            <p>"{{ selectedOrder()!.notes }}"</p>
+          </div>
+        }
+      </section>
+
+      <!-- Items List -->
+      <section class="panel-section">
+        <h3 class="section-title">Order Items ({{ selectedOrder()!.items.length }})</h3>
+        <div class="panel-items">
+          @for (item of selectedOrder()!.items; track item.id) {
+            <div class="item-row">
+              <img [src]="item.product_image" [alt]="item.product_title" class="item-img" onerror="this.src='/assets/images/hero_banner.jpg'" />
+              <div class="item-info">
+                <strong>{{ item.product_title }}</strong>
+                <span>Size: {{ item.size }} • Qty: {{ item.quantity }}</span>
+              </div>
+              <div class="item-price">₹{{ item.subtotal | number:'1.0-0' }}</div>
+            </div>
+          }
+        </div>
+        <div class="order-total-bar">
+          <span>Total Amount</span>
+          <strong>₹{{ selectedOrder()!.total_amount | number:'1.0-0' }}</strong>
+        </div>
+      </section>
+
+      <!-- Status Update -->
+      <section class="panel-section">
+        <h3 class="section-title">Update Order Status</h3>
+        <div class="update-form">
+          <div class="field-row">
+            <label>Status</label>
+            <select [(ngModel)]="updateForm.status">
+              @for (s of statuses; track s) { <option [value]="s">{{ s | titlecase }}</option> }
+            </select>
+          </div>
+          <div class="field-row">
+            <label>Tracking Carrier</label>
+            <input type="text" [(ngModel)]="updateForm.tracking_carrier" placeholder="e.g. DTDC, Delhivery, India Post" />
+          </div>
+          <div class="field-row">
+            <label>Tracking Number</label>
+            <input type="text" [(ngModel)]="updateForm.tracking_number" placeholder="Enter AWB / consignment no." />
+          </div>
+          <div class="field-row">
+            <label>Notes (internal)</label>
+            <textarea [(ngModel)]="updateForm.notes" rows="2" placeholder="Internal notes, special handling…"></textarea>
+          </div>
+          <button class="btn-update" (click)="saveOrderUpdate()" [disabled]="isSaving()">
+            {{ isSaving() ? 'Saving…' : 'Save Update' }}
+          </button>
+        </div>
+      </section>
+
+      <!-- WhatsApp Message Preview -->
+      <section class="panel-section">
+        <h3 class="section-title">📲 WhatsApp Dispatch Message</h3>
+        <div class="wa-preview">
+          <pre class="wa-message">{{ buildWhatsAppMessage(selectedOrder()!) }}</pre>
+          <button class="wa-btn" (click)="openWhatsApp(selectedOrder()!)">
+            Send via WhatsApp
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+}

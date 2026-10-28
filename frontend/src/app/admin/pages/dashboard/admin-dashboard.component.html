@@ -1,0 +1,181 @@
+<div class="admin-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Dashboard Overview</h1>
+      <p class="page-subtitle">Shaify Styles boutique analytics & quick actions</p>
+    </div>
+    <button class="refresh-btn" (click)="loadMetrics()" [disabled]="isLoading()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <polyline points="1 4 1 10 7 10"></polyline>
+        <path d="M3.51 15a9 9 0 1 0 .49-4.92"></path>
+      </svg>
+      Refresh
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-grid">
+      @for (_ of [1,2,3,4]; track $index) {
+        <div class="skeleton-card"></div>
+      }
+    </div>
+  } @else if (metrics()) {
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card revenue">
+        <div class="kpi-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">Total Revenue</span>
+          <span class="kpi-value">₹{{ metrics()!.total_revenue | number:'1.0-0' }}</span>
+          <span class="kpi-sub">From paid & delivered orders</span>
+        </div>
+      </div>
+
+      <div class="kpi-card orders">
+        <div class="kpi-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">Total Orders</span>
+          <span class="kpi-value">{{ metrics()!.total_orders }}</span>
+          <span class="kpi-sub">{{ metrics()!.pending_dispatch }} awaiting dispatch</span>
+        </div>
+      </div>
+
+      <div class="kpi-card pending">
+        <div class="kpi-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">Pending Dispatch</span>
+          <span class="kpi-value">{{ metrics()!.pending_dispatch }}</span>
+          <span class="kpi-sub">Paid orders not yet shipped</span>
+        </div>
+      </div>
+
+      <div class="kpi-card" [class.low-stock-alert]="metrics()!.low_stock_count > 0">
+        <div class="kpi-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-label">Low Stock Products</span>
+          <span class="kpi-value">{{ metrics()!.low_stock_count }}</span>
+          <span class="kpi-sub">Stock below 5 units — restock soon!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Breakdown Row -->
+    <div class="status-breakdown-card">
+      <h3 class="section-title">Order Status Breakdown</h3>
+      <div class="status-pills-row">
+        @for (entry of getStatusEntries(); track entry[0]) {
+          <div class="status-pill-item" [class]="'status-' + entry[0]">
+            <span class="status-dot"></span>
+            <span class="status-label">{{ entry[0] | titlecase }}</span>
+            <span class="status-count">{{ entry[1] }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Low Stock Warnings -->
+    @if (metrics()!.low_stock_count > 0) {
+      <div class="low-stock-section">
+        <div class="section-header">
+          <h3 class="section-title">⚠️ Low Stock Alerts</h3>
+          <a routerLink="/admin/products" class="see-all-link">Manage Products →</a>
+        </div>
+        <div class="low-stock-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of metrics()!.low_stock_products; track p.id) {
+                <tr [class.out-of-stock]="p.stock === 0">
+                  <td>
+                    <div class="product-cell">
+                      <img [src]="p.image_url" [alt]="p.title" class="product-thumb" onerror="this.style.display='none'" />
+                      <span>{{ p.title }}</span>
+                    </div>
+                  </td>
+                  <td><span class="category-tag">{{ p.category }}</span></td>
+                  <td>₹{{ (p.discounted_price ?? p.price) | number:'1.0-0' }}</td>
+                  <td>
+                    <span class="stock-badge" [class.zero]="p.stock === 0">
+                      {{ p.stock === 0 ? 'Out of Stock' : p.stock + ' left' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- Recent Orders Section -->
+    <div class="recent-orders-section">
+      <div class="section-header">
+        <h3 class="section-title">📦 Recent Boutique Orders</h3>
+        <a routerLink="/admin/orders" class="see-all-link">All Orders ({{ metrics()!.total_orders }}) →</a>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Phone</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (o of recentOrders(); track o.id) {
+              <tr>
+                <td><span class="order-id">#SS-{{ o.id }}</span></td>
+                <td>{{ o.customer_name }}</td>
+                <td>{{ o.customer_phone }}</td>
+                <td><strong>₹{{ o.total_amount | number:'1.0-0' }}</strong></td>
+                <td>
+                  <span class="status-badge" [class]="'badge-' + o.status">
+                    {{ o.status | titlecase }}
+                  </span>
+                </td>
+                <td>{{ o.created_at | date:'MMM d, y' }}</td>
+                <td>
+                  <a [routerLink]="['/admin/orders']" [queryParams]="{ id: o.id }" class="view-link">View</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

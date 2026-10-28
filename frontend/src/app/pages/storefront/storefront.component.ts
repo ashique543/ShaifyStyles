@@ -26,8 +26,7 @@ import { FooterComponent } from '../../components/footer/footer.component';
     OrderConfirmationModalComponent,
     FooterComponent
   ],
-  templateUrl: './storefront.component.html',
-  styleUrl: './storefront.component.css'
+  templateUrl: './storefront.component.html'
 })
 export class StorefrontComponent implements OnInit {
   private apiService = inject(ApiService);

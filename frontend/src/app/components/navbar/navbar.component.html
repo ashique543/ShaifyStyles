@@ -1,0 +1,101 @@
+<!-- Top Announcement Banner -->
+<div class="announcement-bar">
+  <div class="announcement-content">
+    <span class="delivery-highlight">
+      <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="1" y="3" width="15" height="13"></rect>
+        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+        <circle cx="5.5" cy="18.5" r="2.5"></circle>
+        <circle cx="18.5" cy="18.5" r="2.5"></circle>
+      </svg>
+      Pan India Delivery
+    </span>
+    <span class="divider">•</span>
+    <span class="trust-badge">
+      <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+      500+ Orders Delivered
+    </span>
+    <span class="divider">•</span>
+    <span class="custom-badge">Custom Hampers Available</span>
+  </div>
+  <div class="announcement-actions">
+    <a href="https://instagram.com/shaifystyles_" target="_blank" rel="noopener noreferrer" class="social-link" title="Follow on Instagram">
+      <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      </svg>
+      <span>&#64;shaifystyles_</span>
+    </a>
+    <a href="https://wa.me/919876543210?text=Hello%20Shaify%20Styles!%20I%20would%20like%20to%20inquire%20about%20custom%20hampers." target="_blank" rel="noopener noreferrer" class="social-link whatsapp-pill">
+      <span>WhatsApp Inquiry</span>
+    </a>
+  </div>
+</div>
+
+<!-- Main Navigation Bar -->
+<header class="main-header">
+  <div class="container header-container">
+    <!-- Brand Logo -->
+    <a href="#" class="brand-logo" (click)="onSelectCategory('All'); $event.preventDefault()">
+      <div class="brand-mark">SS</div>
+      <div class="brand-text">
+        <span class="brand-title">Shaify Styles</span>
+        <span class="brand-tagline">Modest Fashion & Curated Hampers</span>
+      </div>
+    </a>
+
+    <!-- Navigation Links -->
+    <nav class="nav-links">
+      <button 
+        type="button"
+        class="nav-btn" 
+        [class.active]="selectedCategory() === 'All'"
+        (click)="onSelectCategory('All')">
+        All Collections
+      </button>
+      <button 
+        type="button"
+        class="nav-btn" 
+        [class.active]="selectedCategory() === 'Suits & Kurtis'"
+        (click)="onSelectCategory('Suits & Kurtis')">
+        Suits & Kurtis
+      </button>
+      <button 
+        type="button"
+        class="nav-btn" 
+        [class.active]="selectedCategory() === 'Hijab Bouquets'"
+        (click)="onSelectCategory('Hijab Bouquets')">
+        Hijab Bouquets
+      </button>
+      <button 
+        type="button"
+        class="nav-btn" 
+        [class.active]="selectedCategory() === 'Custom Hampers'"
+        (click)="onSelectCategory('Custom Hampers')">
+        Custom Hampers
+      </button>
+    </nav>
+
+    <!-- Header Actions: Cart & Contact -->
+    <div class="header-actions">
+      <button 
+        type="button" 
+        class="cart-toggle-btn" 
+        (click)="cartService.openCart()"
+        aria-label="View Shopping Bag">
+        <svg class="cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+        <span class="cart-label">Bag</span>
+        @if (cartService.totalCount() > 0) {
+          <span class="cart-badge">{{ cartService.totalCount() }}</span>
+        }
+      </button>
+    </div>
+  </div>
+</header>

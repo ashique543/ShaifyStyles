@@ -1,0 +1,235 @@
+<app-admin-toasts #toasts></app-admin-toasts>
+
+<div class="admin-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Product Catalog</h1>
+      <p class="page-subtitle">Manage your boutique collection — {{ totalItems() }} products</p>
+    </div>
+    <button class="btn-add" (click)="openAddModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Add New Product
+    </button>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="search-wrapper">
+      <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" class="search-inp" [(ngModel)]="searchQuery" (input)="onSearch()" placeholder="Search product title or description…" />
+    </div>
+    <select class="filter-select" [(ngModel)]="categoryFilter" (change)="loadProducts()">
+      <option value="">All Categories</option>
+      @for (c of categories; track c) { <option [value]="c">{{ c }}</option> }
+    </select>
+    <button class="refresh-btn" (click)="loadProducts()">Refresh</button>
+  </div>
+
+  <!-- Table -->
+  @if (isLoading()) {
+    <div class="table-skeleton">
+      @for (_ of [1,2,3,4,5]; track $index) {
+        <div class="row-skeleton"></div>
+      }
+    </div>
+  } @else {
+    <div class="table-card">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Sizes</th>
+              <th>Badge</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of products(); track p.id) {
+              <tr [class.out-of-stock]="p.stock === 0">
+                <td>
+                  <img [src]="p.image_url" [alt]="p.title" class="product-thumb" onerror="this.src='/assets/images/hero_banner.jpg'" />
+                </td>
+                <td>
+                  <div class="title-cell">
+                    <strong>{{ p.title }}</strong>
+                    <small>{{ p.fabric }}</small>
+                  </div>
+                </td>
+                <td><span class="category-tag">{{ p.category }}</span></td>
+                <td>
+                  <div class="price-cell">
+                    <span class="curr-price">₹{{ (p.discounted_price ?? p.price) | number:'1.0-0' }}</span>
+                    @if (p.discounted_price) {
+                      <span class="orig-price">₹{{ p.price | number:'1.0-0' }}</span>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <span class="stock-badge" [class.zero]="p.stock === 0">
+                    {{ p.stock === 0 ? 'Out of Stock' : p.stock + ' in stock' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="sizes-summary">{{ (p.sizes || []).slice(0,2).join(', ') }}{{ (p.sizes || []).length > 2 ? '…' : '' }}</span>
+                </td>
+                <td>
+                  @if (p.badge) { <span class="badge-pill">{{ p.badge }}</span> }
+                </td>
+                <td>
+                  <div class="action-btns">
+                    <button class="btn-icon edit" (click)="openEditModal(p)" title="Edit product">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </button>
+                    <button class="btn-icon delete" (click)="confirmDelete(p)" title="Delete product">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Add/Edit Product Modal Dialog -->
+@if (isModalOpen()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="product-modal" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">{{ editingProduct() ? 'Edit Product' : 'Add New Product' }}</h2>
+
+      <form (ngSubmit)="saveProduct()">
+        <div class="form-grid">
+          <div class="field full">
+            <label>Product Title *</label>
+            <input type="text" [(ngModel)]="form.title" name="title" required placeholder="e.g. Shaify Crimson Rose Lawn Suit" />
+          </div>
+
+          <div class="field">
+            <label>Category *</label>
+            <select [(ngModel)]="form.category" name="category" required>
+              @for (c of categories; track c) { <option [value]="c">{{ c }}</option> }
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Fabric / Material Detail</label>
+            <input type="text" [(ngModel)]="form.fabric" name="fabric" placeholder="e.g. Pure Tissue Silk, Georgette Hijab" />
+          </div>
+
+          <div class="field">
+            <label>Regular Price (₹) *</label>
+            <input type="number" [(ngModel)]="form.price" name="price" required min="1" placeholder="3899" />
+          </div>
+
+          <div class="field">
+            <label>Discounted Price (₹)</label>
+            <input type="number" [(ngModel)]="form.discounted_price" name="discounted_price" min="0" placeholder="3299 (leave blank if none)" />
+          </div>
+
+          <div class="field">
+            <label>Inventory Stock Units *</label>
+            <input type="number" [(ngModel)]="form.stock" name="stock" required min="0" placeholder="10" />
+          </div>
+
+          <div class="field">
+            <label>Badge (optional)</label>
+            <input type="text" [(ngModel)]="form.badge" name="badge" placeholder="e.g. Bestseller, New Launch" />
+          </div>
+
+          <div class="field full">
+            <label>Description</label>
+            <textarea [(ngModel)]="form.description" name="description" rows="3" placeholder="Detailed product description…"></textarea>
+          </div>
+
+          <!-- Size Picker -->
+          <div class="field full">
+            <label>Sizes / Style Options</label>
+            <div class="sizes-grid">
+              @for (s of sizeOptions; track s) {
+                <label class="size-toggle" [class.selected]="isSelected(s)">
+                  <input type="checkbox" [checked]="isSelected(s)" (change)="toggleSize(s)" style="display:none"/>
+                  {{ s }}
+                </label>
+              }
+            </div>
+            <input type="text" class="sizes-custom" [(ngModel)]="customSizeInput" name="customSize"
+              placeholder="Or type custom sizes comma-separated: e.g. S, M, L" />
+          </div>
+
+          <!-- Image Upload / URL -->
+          <div class="field full">
+            <label>Product Image *</label>
+            <div class="image-upload-area">
+              @if (imagePreview()) {
+                <img [src]="imagePreview()!" alt="Preview" class="img-preview" />
+              }
+              <div class="upload-controls">
+                <label class="upload-file-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="12" x2="12" y2="15"></line>
+                  </svg>
+                  {{ uploadingImg() ? 'Uploading…' : 'Upload Image' }}
+                  <input type="file" accept="image/*" (change)="onFileSelected($event)" style="display:none" [disabled]="uploadingImg()" />
+                </label>
+                <span class="divider-text">or paste URL</span>
+                <input type="text" [(ngModel)]="form.image_url" name="image_url" placeholder="https://… or /assets/…"
+                  (input)="onImageUrlChange()" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        @if (formError()) {
+          <div class="form-error">{{ formError() }}</div>
+        }
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-save" [disabled]="isSaving()">
+            {{ isSaving() ? 'Saving…' : (editingProduct() ? 'Update Product' : 'Create Product') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Delete Confirmation Modal -->
+@if (deletingProduct()) {
+  <div class="modal-backdrop" (click)="deletingProduct.set(null)">
+    <div class="confirm-modal" (click)="$event.stopPropagation()">
+      <div class="confirm-icon">🗑️</div>
+      <h3>Delete Product?</h3>
+      <p>Are you sure you want to permanently delete <strong>"{{ deletingProduct()!.title }}"</strong>? This action cannot be undone.</p>
+      <div class="confirm-actions">
+        <button class="btn-cancel" (click)="deletingProduct.set(null)">Cancel</button>
+        <button class="btn-delete-confirm" (click)="executeDelete()" [disabled]="isSaving()">
+          {{ isSaving() ? 'Deleting…' : 'Delete Product' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

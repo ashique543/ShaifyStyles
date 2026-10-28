@@ -1,0 +1,110 @@
+<div class="admin-login-screen">
+  <!-- Left Branding Panel -->
+  <div class="brand-panel">
+    <div class="brand-glow"></div>
+    <div class="brand-content">
+      <div class="brand-logo-mark">SS</div>
+      <h1 class="brand-name">Shaify Styles</h1>
+      <p class="brand-tagline">Admin Control Panel</p>
+      <div class="brand-features">
+        <div class="feat">📊 Live Sales Dashboard</div>
+        <div class="feat">📦 Product Management</div>
+        <div class="feat">🚚 Order Fulfilment</div>
+        <div class="feat">📤 Image Upload & Storage</div>
+      </div>
+    </div>
+    <div class="brand-footer">instagram.com/shaifystyles_</div>
+  </div>
+
+  <!-- Right Login Card -->
+  <div class="login-panel">
+    <div class="login-card">
+      <div class="card-header">
+        <div class="lock-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h2>Boutique Admin Login</h2>
+        <p>Access the Shaify Styles management panel</p>
+      </div>
+
+      <form class="login-form" (ngSubmit)="onSubmit()">
+        <div class="field-group">
+          <label for="admin-username">Username</label>
+          <div class="input-wrapper">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <input
+              id="admin-username"
+              type="text"
+              [(ngModel)]="username"
+              name="username"
+              placeholder="e.g. admin"
+              autocomplete="username"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="admin-password">Password</label>
+          <div class="input-wrapper">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <input
+              id="admin-password"
+              [type]="showPassword() ? 'text' : 'password'"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="Your admin password"
+              autocomplete="current-password"
+              required
+            />
+            <button type="button" class="toggle-pw" (click)="showPassword.update(v => !v)">
+              @if (showPassword()) {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              } @else {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              }
+            </button>
+          </div>
+        </div>
+
+        @if (errorMsg()) {
+          <div class="error-alert">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            {{ errorMsg() }}
+          </div>
+        }
+
+        <button type="submit" class="login-btn" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <span class="spinner"></span>
+            <span>Authenticating…</span>
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+              <polyline points="10 17 15 12 10 7"></polyline>
+              <line x1="15" y1="12" x2="3" y2="12"></line>
+            </svg>
+            <span>Sign In to Admin Panel</span>
+          }
+        </button>
+      </form>
+
+      <div class="card-footer">
+        <a href="/" class="back-to-store">← Back to Shaify Styles Store</a>
+      </div>
+    </div>
+  </div>
+</div>
