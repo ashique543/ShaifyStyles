@@ -61,6 +61,13 @@
       </svg>
       @if (!collapsed()) { <span>Orders</span> }
     </a>
+
+    <a routerLink="/admin/deployment" routerLinkActive="active" class="nav-item" [title]="collapsed() ? 'Deployment' : ''">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+      </svg>
+      @if (!collapsed()) { <span>Deployment</span> }
+    </a>
   </nav>
 
   <!-- Sidebar Footer: Logout -->

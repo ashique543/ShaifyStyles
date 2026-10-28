@@ -1,0 +1,78 @@
+<!-- Customer Orders Modal Backdrop -->
+<div class="auth-modal-backdrop" *ngIf="authService.isOrdersModalOpen()" (click)="onBackdropClick($event)">
+  <div class="auth-modal-card orders-modal-card" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="auth-modal-header">
+      <div class="orders-header-info">
+        <h2 class="orders-modal-title">My Orders</h2>
+        <span class="orders-customer-name" *ngIf="authService.currentUser()">
+          {{ authService.currentUser()?.name }} &bull; {{ authService.currentUser()?.phone || authService.currentUser()?.email }}
+        </span>
+      </div>
+      <button type="button" class="auth-close-btn" (click)="close()" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="18" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="orders-modal-body">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="orders-loading">
+        <div class="btn-spinner"></div>
+        <p>Retrieving your order history...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading && orders.length === 0" class="orders-empty">
+        <div class="empty-icon-wrap">🛍️</div>
+        <h3>No Orders Yet</h3>
+        <p>You haven't placed any boutique orders yet. Explore our handcrafted collection!</p>
+        <button type="button" class="shop-now-btn" (click)="close()">Explore Collection</button>
+      </div>
+
+      <!-- Orders List -->
+      <div *ngIf="!isLoading && orders.length > 0" class="customer-orders-list">
+        <div *ngFor="let order of orders" class="customer-order-card">
+          <div class="order-top-row">
+            <div>
+              <span class="order-id-badge">Order #SS-{{ order.id }}</span>
+              <span class="order-date">{{ order.created_at | date:'mediumDate' }}</span>
+            </div>
+            <span class="order-status-pill" [ngClass]="'status-' + (order.status || 'created').toLowerCase()">
+              {{ order.status | uppercase }}
+            </span>
+          </div>
+
+          <div class="order-items-summary">
+            <div *ngFor="let item of order.items" class="order-item-row">
+              <span class="order-item-title">{{ item.product_title }}</span>
+              <span class="order-item-meta" *ngIf="item.size && item.size !== 'Standard'">Size: {{ item.size }}</span>
+              <span class="order-item-qty">Qty: {{ item.quantity }}</span>
+              <span class="order-item-price">₹{{ item.price * item.quantity | number }}</span>
+            </div>
+          </div>
+
+          <div class="order-bottom-row">
+            <div class="order-address-snippet">
+              <span class="snippet-label">Delivering to:</span>
+              <span class="snippet-value">{{ order.shipping_address }}</span>
+            </div>
+            <div class="order-total-block">
+              <span class="total-label">Total Amount</span>
+              <span class="total-value">₹{{ order.total_amount | number }}</span>
+            </div>
+          </div>
+
+          <!-- Tracking Carrier Banner if shipped -->
+          <div *ngIf="order.tracking_number" class="order-tracking-banner">
+            <span>🚚 Shipped via <strong>{{ order.tracking_carrier || 'Courier' }}</strong></span>
+            <span class="tracking-code">Awb: {{ order.tracking_number }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

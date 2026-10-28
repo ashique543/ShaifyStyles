@@ -81,4 +81,10 @@ export class AdminApiService {
   ): Observable<{ success: boolean; order: AdminOrder; message: string }> {
     return this.http.patch<any>(`${this.baseUrl}/orders/${id}/status`, payload, { headers: this.getHeaders() });
   }
+
+  // ── Deployment & Integration Status ───────────────────────────────────────
+  getDeploymentStatus(): Observable<{ success: boolean; status: any }> {
+    return this.http.get<any>(`${this.baseUrl}/deployment-status`, { headers: this.getHeaders() });
+  }
 }
+

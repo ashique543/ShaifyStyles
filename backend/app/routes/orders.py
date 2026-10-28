@@ -4,7 +4,7 @@ import time
 import uuid
 from flask import Blueprint, request, jsonify, current_app
 import razorpay
-from ..models import db, Order, OrderItem, Product
+from ..models import db, Order, OrderItem, Product, User
 
 orders_bp = Blueprint('orders', __name__, url_prefix='/api/orders')
 
@@ -125,8 +125,22 @@ def create_order():
         # Simulated order ID for test/demo mode
         razorpay_order_id = f"order_shaify_{int(time.time())}_{uuid.uuid4().hex[:8]}"
 
+    # Identify if a registered user is placing this order
+    user_id = data.get('user_id')
+    if not user_id:
+        # Match phone digits or email
+        phone_digits = ''.join(c for c in customer_phone if c.isdigit())
+        user_match = None
+        if len(phone_digits) >= 10:
+            user_match = User.query.filter_by(phone=phone_digits[-10:]).first()
+        if not user_match and customer_email:
+            user_match = User.query.filter_by(email=customer_email.lower()).first()
+        if user_match:
+            user_id = user_match.id
+
     # Save pending order in database
     new_order = Order(
+        user_id=user_id,
         razorpay_order_id=razorpay_order_id,
         customer_name=customer_name,
         customer_email=customer_email,

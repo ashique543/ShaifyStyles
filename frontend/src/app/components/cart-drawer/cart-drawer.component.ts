@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../services/cart.service';
 import { ApiService } from '../../services/api.service';
+import { CustomerAuthService } from '../../services/customer-auth.service';
 import { OrderDetail } from '../../models/product.model';
 
 declare var Razorpay: any;
@@ -15,6 +16,7 @@ declare var Razorpay: any;
 })
 export class CartDrawerComponent {
   cartService = inject(CartService);
+  authService = inject(CustomerAuthService);
   private apiService = inject(ApiService);
 
   orderConfirmed = output<OrderDetail>();
@@ -47,6 +49,13 @@ export class CartDrawerComponent {
 
   proceedToShipping(): void {
     if (this.cartService.items().length === 0) return;
+    const u = this.authService.currentUser();
+    if (u) {
+      if (!this.customerName && u.name) this.customerName = u.name;
+      if (!this.customerEmail && u.email) this.customerEmail = u.email;
+      if (!this.customerPhone && u.phone) this.customerPhone = u.phone;
+      if (!this.shippingStreet && u.default_address) this.shippingStreet = u.default_address;
+    }
     this.step.set('shipping');
   }
 
@@ -82,6 +91,7 @@ export class CartDrawerComponent {
     this.errorMessage.set(null);
 
     const payload = {
+      user_id: this.authService.currentUser()?.id,
       items: this.cartService.items().map(i => ({
         product_id: i.product.id,
         quantity: i.quantity,

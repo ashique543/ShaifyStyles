@@ -25,11 +25,16 @@ A comprehensive, full-stack boutique e-commerce platform and dedicated Store Own
 ## ✨ Key Features
 
 ### 🛍️ Customer Boutique Storefront (`/`)
-1. **Interactive Catalog**: Filter by category chips, instant keyword search, and sorting (Featured, Price Low to High, Price High to Low, Newest).
-2. **Product Details Modal**: High-res imagery, fabric details, size/style selector, inventory availability, and pre-filled WhatsApp inquiry links.
-3. **Slide-in Cart Drawer**: Real-time quantity adjustment, free shipping threshold progress tracker, and delivery address form.
-4. **Razorpay Payment Gateway**: Seamless integration supporting UPI (Google Pay, PhonePe, Paytm), Credit/Debit cards, NetBanking, and a simulated fallback demo mode.
-5. **Order Confirmation & Tracking**: Receipt modal with unique Order IDs (`#SS-xxx`) and direct one-click WhatsApp order tracking.
+1. **Customer Authentication (Google Sign-In & Mobile OTP)**:
+   - **Mobile OTP**: Fast 10-digit phone verification with SMS gateway integration (Fast2SMS / Twilio) or auto-generated simulation code (`123456`).
+   - **Google Sign-In**: Instant one-click Google OAuth 2.0 authentication or quick demo profile testing.
+   - **Persistent Shopper Session**: 30-day token storage and automatic checkout address pre-filling.
+   - **Customer "My Orders" History**: Real-time order status tracking with courier AWB codes directly from the user dropdown.
+2. **Interactive Catalog**: Filter by category chips, instant keyword search, and sorting (Featured, Price Low to High, Price High to Low, Newest).
+3. **Product Details Modal**: High-res imagery, fabric details, size/style selector, inventory availability, and pre-filled WhatsApp inquiry links.
+4. **Slide-in Cart Drawer**: Real-time quantity adjustment, free shipping threshold progress tracker, and delivery address form with auto-fill.
+5. **Razorpay Payment Gateway**: Seamless integration supporting UPI (Google Pay, PhonePe, Paytm), Credit/Debit cards, NetBanking, and a simulated fallback demo mode.
+6. **Order Confirmation & Tracking**: Receipt modal with unique Order IDs (`#SS-xxx`) and direct one-click WhatsApp order tracking.
 
 ### 🛡️ Store Owner Admin Panel (`/admin`)
 1. **JWT-Secured Authentication**: Protected routes via Angular `authGuard` and Flask-JWT-Extended backend authorization.
@@ -37,6 +42,10 @@ A comprehensive, full-stack boutique e-commerce platform and dedicated Store Own
 3. **Product Management**: Full CRUD operations to create, edit, and delete products, toggle size options, update stock units, and upload product imagery directly.
 4. **Order Fulfillment & Logistics**: Filter orders by status, update fulfillment state (`created` ➔ `paid` ➔ `processing` ➔ `shipped` ➔ `delivered`), assign tracking carrier and AWB numbers, and add internal notes.
 5. **One-Click WhatsApp Dispatch**: Generates pre-formatted WhatsApp customer dispatch messages with tracking info and order details ready to send.
+6. **🚀 In-App Deployment & Health Center (`/admin/deployment`)**:
+   - Live system status matrix (Database, Razorpay, Google OAuth, SMS OTP, Cloudinary, WSGI).
+   - Copyable guides and commands for Render, Railway, Vercel, Netlify, and managed PostgreSQL (Neon / Supabase).
+   - One-click copyable production environment variables generator.
 
 ---
 

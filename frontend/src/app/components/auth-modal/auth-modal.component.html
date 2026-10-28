@@ -1,0 +1,257 @@
+<!-- Customer Auth Modal Backdrop -->
+<div class="auth-modal-backdrop" *ngIf="authService.isAuthModalOpen()" (click)="onBackdropClick($event)">
+  <div class="auth-modal-card" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="auth-modal-header">
+      <div class="auth-brand-badge">
+        <span class="auth-brand-sparkle">✨</span>
+        <span class="auth-brand-text">Shaify Styles Boutique</span>
+      </div>
+      <button type="button" class="auth-close-btn" (click)="close()" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Title & Subtitle -->
+    <div class="auth-title-section">
+      <h2 class="auth-modal-title">Sign In or Create Account</h2>
+      <p class="auth-modal-subtitle">Track orders, save addresses, and enjoy an exclusive boutique experience.</p>
+    </div>
+
+    <!-- Alert Message -->
+    <div *ngIf="errorMessage" class="auth-alert error">
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <div *ngIf="successMessage" class="auth-alert success">
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      <span>{{ successMessage }}</span>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="auth-tabs">
+      <button 
+        type="button" 
+        class="auth-tab-btn" 
+        [class.active]="activeTab === 'otp'" 
+        (click)="switchTab('otp')">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+          <line x1="12" y1="18" x2="12.01" y2="18"></line>
+        </svg>
+        Mobile OTP
+      </button>
+      <button 
+        type="button" 
+        class="auth-tab-btn" 
+        [class.active]="activeTab === 'google'" 
+        (click)="switchTab('google')">
+        <svg viewBox="0 0 24 24" width="16" height="16">
+          <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"/>
+          <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+        </svg>
+        Google Login
+      </button>
+    </div>
+
+    <!-- TAB 1: Mobile Phone OTP Flow -->
+    <div *ngIf="activeTab === 'otp'" class="auth-tab-content">
+      <!-- Step 1: Input Phone -->
+      <form *ngIf="otpStep === 'phone'" (ngSubmit)="sendOtpCode()" class="auth-form">
+        <div class="auth-field-group">
+          <label class="auth-label" for="phoneInput">Mobile Number</label>
+          <div class="auth-phone-input-wrap">
+            <span class="auth-country-code">🇮🇳 +91</span>
+            <input 
+              id="phoneInput"
+              type="tel" 
+              name="phoneNumber"
+              [(ngModel)]="phoneNumber" 
+              placeholder="98765 43210" 
+              maxlength="10"
+              class="auth-input auth-phone-input"
+              required 
+              autofocus
+            />
+          </div>
+          <span class="auth-hint">Enter your 10-digit Indian mobile number</span>
+        </div>
+
+        <div class="auth-field-group">
+          <label class="auth-label" for="customerName">Your Name <span class="auth-optional">(optional)</span></label>
+          <input 
+            id="customerName"
+            type="text" 
+            name="customerName"
+            [(ngModel)]="customerName" 
+            placeholder="e.g. Ayesha Khan" 
+            class="auth-input"
+          />
+        </div>
+
+        <div class="auth-sim-note">
+          <span class="sim-pill">Auto-Dev Mode</span>
+          <span>Simulation mode active: Demo code is <strong>123456</strong></span>
+        </div>
+
+        <button 
+          type="submit" 
+          class="auth-submit-btn" 
+          [disabled]="isLoading || phoneNumber.length < 10">
+          <span *ngIf="!isLoading">Send Verification Code</span>
+          <span *ngIf="isLoading" class="btn-spinner-wrap">
+            <span class="btn-spinner"></span> Sending OTP...
+          </span>
+        </button>
+      </form>
+
+      <!-- Step 2: Verify OTP Code -->
+      <form *ngIf="otpStep === 'verify'" (ngSubmit)="verifyOtpCode()" class="auth-form">
+        <div class="auth-verify-header">
+          <div class="auth-phone-tag">
+            <span>Code sent to <strong>+91 {{ phoneNumber }}</strong></span>
+            <button type="button" class="auth-change-phone" (click)="otpStep = 'phone'">Edit</button>
+          </div>
+        </div>
+
+        <div class="auth-field-group">
+          <label class="auth-label" for="otpInput">Enter 6-Digit Code</label>
+          <input 
+            id="otpInput"
+            type="text" 
+            name="otpCode"
+            [(ngModel)]="otpCode" 
+            placeholder="• • • • • •" 
+            maxlength="6"
+            class="auth-input auth-otp-input"
+            required 
+            autofocus
+          />
+          <div class="auth-otp-helpers">
+            <button 
+              type="button" 
+              class="auth-autofill-btn" 
+              (click)="autoFillDemoOtp()">
+              ✨ Auto-fill demo OTP ({{ demoOtpHint || '123456' }})
+            </button>
+            <div class="auth-resend-wrap">
+              <span *ngIf="resendTimer > 0" class="auth-countdown">Resend in {{ resendTimer }}s</span>
+              <button 
+                *ngIf="resendTimer === 0" 
+                type="button" 
+                class="auth-resend-btn" 
+                (click)="sendOtpCode()">
+                Resend Code
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          class="auth-submit-btn" 
+          [disabled]="isLoading || otpCode.length < 6">
+          <span *ngIf="!isLoading">Verify & Enter Boutique</span>
+          <span *ngIf="isLoading" class="btn-spinner-wrap">
+            <span class="btn-spinner"></span> Verifying...
+          </span>
+        </button>
+      </form>
+    </div>
+
+    <!-- TAB 2: Google Sign-In Flow -->
+    <div *ngIf="activeTab === 'google'" class="auth-tab-content">
+      <div class="google-auth-box">
+        <button 
+          type="button" 
+          class="google-primary-btn" 
+          (click)="signInWithGoogleClient()" 
+          [disabled]="isLoading">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <div class="auth-divider">
+          <span>OR TEST WITH ONE-CLICK PROFILES</span>
+        </div>
+
+        <div class="demo-profiles-list">
+          <p class="demo-profiles-title">Select a test shopper profile to sign in instantly:</p>
+          <div class="demo-profiles-grid">
+            <button 
+              type="button" 
+              class="demo-profile-card" 
+              (click)="selectDevProfile('Ayesha Khan', 'ayesha.khan@example.com')"
+              [disabled]="isLoading">
+              <span class="demo-avatar">AK</span>
+              <div class="demo-meta">
+                <span class="demo-name">Ayesha Khan</span>
+                <span class="demo-email">ayesha.khan@example.com</span>
+              </div>
+            </button>
+
+            <button 
+              type="button" 
+              class="demo-profile-card" 
+              (click)="selectDevProfile('Zainab Ali', 'zainab.ali@example.com')"
+              [disabled]="isLoading">
+              <span class="demo-avatar">ZA</span>
+              <div class="demo-meta">
+                <span class="demo-name">Zainab Ali</span>
+                <span class="demo-email">zainab.ali@example.com</span>
+              </div>
+            </button>
+
+            <button 
+              type="button" 
+              class="demo-profile-card" 
+              (click)="selectDevProfile('Fatima Noor', 'fatima.noor@example.com')"
+              [disabled]="isLoading">
+              <span class="demo-avatar">FN</span>
+              <div class="demo-meta">
+                <span class="demo-name">Fatima Noor</span>
+                <span class="demo-email">fatima.noor@example.com</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="auth-guide-hint">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span>Live Google Cloud Client ID can be configured anytime in <strong>Admin Panel &gt; Deployment</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Security Note -->
+    <div class="auth-modal-footer">
+      <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+      <span>256-Bit SSL Encrypted &bull; Fast, Private &amp; Spam-Free</span>
+    </div>
+  </div>
+</div>

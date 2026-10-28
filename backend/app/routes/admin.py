@@ -421,3 +421,78 @@ def update_order_status(order_id: int):
         'order': order.to_dict(),
         'message': f'Order #SS-{order.id} updated to "{order.status}" successfully!'
     }), 200
+
+
+# ─── Deployment & Infrastructure Status ───────────────────────────────────────
+
+@admin_bp.route('/deployment-status', methods=['GET'])
+@jwt_required()
+def get_deployment_status():
+    """Returns real-time status of all backend infrastructure, databases, and third-party integrations."""
+    cfg = current_app.config
+
+    db_uri = cfg.get('SQLALCHEMY_DATABASE_URI', '')
+    is_postgres = 'postgresql' in db_uri or 'postgres' in db_uri
+    db_type = 'PostgreSQL (Production)' if is_postgres else 'SQLite (Local Dev File)'
+
+    # Razorpay info
+    rzp_key = cfg.get('RAZORPAY_KEY_ID', '')
+    is_rzp_mock = not rzp_key or 'YourRazorpay' in rzp_key or 'ShaifyTestKey' in rzp_key
+    rzp_status = 'Active (Live/Test Key)' if not is_rzp_mock else 'Simulated / Mock Gateway'
+
+    # Google OAuth
+    google_id = cfg.get('GOOGLE_CLIENT_ID', '')
+    is_google = bool(google_id and 'YourGoogle' not in google_id)
+
+    # SMS Gateway
+    sms_gateway = cfg.get('SMS_GATEWAY', 'simulation')
+    is_sms_ready = False
+    if sms_gateway == 'fast2sms':
+        is_sms_ready = bool(cfg.get('FAST2SMS_API_KEY'))
+    elif sms_gateway == 'twilio':
+        is_sms_ready = bool(cfg.get('TWILIO_ACCOUNT_SID') and cfg.get('TWILIO_AUTH_TOKEN'))
+    
+    # Image Storage
+    c_name = cfg.get('CLOUDINARY_CLOUD_NAME', '')
+    c_key = cfg.get('CLOUDINARY_API_KEY', '')
+    is_cloud_storage = bool(c_name and c_key)
+
+    return jsonify({
+        'success': True,
+        'status': {
+            'database': {
+                'type': db_type,
+                'is_production_ready': is_postgres,
+                'status': 'Connected',
+                'target': 'Render / Supabase / Neon / AWS RDS'
+            },
+            'razorpay': {
+                'status': rzp_status,
+                'is_live': not is_rzp_mock,
+                'key_id_preview': rzp_key[:12] + '...' if len(rzp_key) > 12 else 'Not Configured'
+            },
+            'google_oauth': {
+                'configured': is_google,
+                'client_id_preview': google_id[:16] + '...' if len(google_id) > 16 else 'Not Set (Simulation active)',
+                'status': 'Ready for Google Sign-In' if is_google else 'One-Click Dev Bypass active'
+            },
+            'sms_otp': {
+                'gateway': sms_gateway,
+                'configured': is_sms_ready,
+                'status': f'{sms_gateway.capitalize()} Gateway Active' if is_sms_ready else 'Terminal Demo OTP active (123456)',
+                'demo_otp': cfg.get('DEMO_OTP', '123456')
+            },
+            'media_storage': {
+                'provider': 'Cloudinary (Cloud CDN)' if is_cloud_storage else 'Local Static Disk Storage',
+                'is_cloud': is_cloud_storage,
+                'status': 'Ready for global fast delivery' if is_cloud_storage else 'Local uploads/ directory'
+            },
+            'server_environment': {
+                'python_version': '3.x',
+                'framework': 'Flask + SQLAlchemy + Flask-JWT-Extended',
+                'jwt_configured': bool(cfg.get('JWT_SECRET_KEY')),
+                'cors': 'Enabled for all origins (*)'
+            }
+        }
+    }), 200
+

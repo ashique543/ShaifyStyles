@@ -9,6 +9,7 @@ from .models import db, bcrypt, Admin
 from .routes.products import products_bp
 from .routes.orders import orders_bp
 from .routes.admin import admin_bp
+from .routes.auth import auth_bp
 from .seed import seed_database
 
 def create_app(config_class=Config):
@@ -31,6 +32,7 @@ def create_app(config_class=Config):
     app.register_blueprint(products_bp)
     app.register_blueprint(orders_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(auth_bp)
 
     # ── Health Check ─────────────────────────────────────────────────────────
     @app.route('/api/health', methods=['GET'])

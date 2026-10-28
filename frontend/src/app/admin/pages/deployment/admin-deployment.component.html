@@ -1,0 +1,304 @@
+<div class="admin-page">
+  <!-- Top Bar -->
+  <div class="admin-page-header">
+    <div>
+      <h1 class="admin-page-title">🚀 Production Deployment &amp; Integrations</h1>
+      <p class="admin-page-desc">Real-time infrastructure health, copyable configuration commands, and step-by-step guides for going live.</p>
+    </div>
+    <div class="header-actions-group">
+      <button type="button" class="admin-btn admin-btn-secondary" (click)="loadDeploymentStatus()" [disabled]="isLoading">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+        <span>Refresh Status</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Real-time Status Matrix -->
+  <div class="deployment-status-grid" *ngIf="status">
+    <!-- Database Card -->
+    <div class="deploy-status-card" [class.ready]="status.database.is_production_ready" [class.warning]="!status.database.is_production_ready">
+      <div class="deploy-status-top">
+        <span class="deploy-icon">🗄️</span>
+        <span class="deploy-pill" [class.pill-success]="status.database.is_production_ready" [class.pill-amber]="!status.database.is_production_ready">
+          {{ status.database.is_production_ready ? 'Production Ready' : 'Local SQLite Dev' }}
+        </span>
+      </div>
+      <h3 class="deploy-card-title">Database Storage</h3>
+      <p class="deploy-card-val">{{ status.database.type }}</p>
+      <span class="deploy-card-tip">Target: {{ status.database.target }}</span>
+    </div>
+
+    <!-- Razorpay Card -->
+    <div class="deploy-status-card" [class.ready]="status.razorpay.is_live" [class.warning]="!status.razorpay.is_live">
+      <div class="deploy-status-top">
+        <span class="deploy-icon">💳</span>
+        <span class="deploy-pill" [class.pill-success]="status.razorpay.is_live" [class.pill-amber]="!status.razorpay.is_live">
+          {{ status.razorpay.is_live ? 'Live Keys' : 'Test Mode' }}
+        </span>
+      </div>
+      <h3 class="deploy-card-title">Razorpay Payments</h3>
+      <p class="deploy-card-val">{{ status.razorpay.status }}</p>
+      <span class="deploy-card-tip">Key: {{ status.razorpay.key_id_preview }}</span>
+    </div>
+
+    <!-- Google OAuth Card -->
+    <div class="deploy-status-card" [class.ready]="status.google_oauth.configured" [class.warning]="!status.google_oauth.configured">
+      <div class="deploy-status-top">
+        <span class="deploy-icon">🔐</span>
+        <span class="deploy-pill" [class.pill-success]="status.google_oauth.configured" [class.pill-blue]="!status.google_oauth.configured">
+          {{ status.google_oauth.configured ? 'Google OAuth Active' : 'Simulation Mode' }}
+        </span>
+      </div>
+      <h3 class="deploy-card-title">Google Sign-In</h3>
+      <p class="deploy-card-val">{{ status.google_oauth.status }}</p>
+      <span class="deploy-card-tip">Client ID: {{ status.google_oauth.client_id_preview }}</span>
+    </div>
+
+    <!-- SMS OTP Card -->
+    <div class="deploy-status-card" [class.ready]="status.sms_otp.configured" [class.warning]="!status.sms_otp.configured">
+      <div class="deploy-status-top">
+        <span class="deploy-icon">📱</span>
+        <span class="deploy-pill" [class.pill-success]="status.sms_otp.configured" [class.pill-blue]="!status.sms_otp.configured">
+          {{ status.sms_otp.configured ? 'Live Gateway' : 'Console OTP (123456)' }}
+        </span>
+      </div>
+      <h3 class="deploy-card-title">Mobile Phone OTP</h3>
+      <p class="deploy-card-val">{{ status.sms_otp.status }}</p>
+      <span class="deploy-card-tip">Gateway: {{ status.sms_otp.gateway | uppercase }} &bull; Demo Code: {{ status.sms_otp.demo_otp }}</span>
+    </div>
+
+    <!-- Media Storage Card -->
+    <div class="deploy-status-card" [class.ready]="status.media_storage.is_cloud" [class.warning]="!status.media_storage.is_cloud">
+      <div class="deploy-status-top">
+        <span class="deploy-icon">☁️</span>
+        <span class="deploy-pill" [class.pill-success]="status.media_storage.is_cloud" [class.pill-amber]="!status.media_storage.is_cloud">
+          {{ status.media_storage.is_cloud ? 'Cloudinary CDN' : 'Local Disk' }}
+        </span>
+      </div>
+      <h3 class="deploy-card-title">Media Storage</h3>
+      <p class="deploy-card-val">{{ status.media_storage.provider }}</p>
+      <span class="deploy-card-tip">{{ status.media_storage.status }}</span>
+    </div>
+
+    <!-- Server WSGI Card -->
+    <div class="deploy-status-card ready">
+      <div class="deploy-status-top">
+        <span class="deploy-icon">⚡</span>
+        <span class="deploy-pill pill-success">WSGI Ready</span>
+      </div>
+      <h3 class="deploy-card-title">Backend API Engine</h3>
+      <p class="deploy-card-val">Procfile + Gunicorn Ready</p>
+      <span class="deploy-card-tip">JWT Expiration: 30 Days &bull; CORS: All Origins</span>
+    </div>
+  </div>
+
+  <!-- Interactive Deployment Guide Tabs -->
+  <div class="deploy-guide-section">
+    <div class="deploy-tabs-nav">
+      <button type="button" class="deploy-tab-nav-btn" [class.active]="selectedGuide === 'backend'" (click)="selectedGuide = 'backend'">
+        <span>1. Backend (Render / VPS)</span>
+      </button>
+      <button type="button" class="deploy-tab-nav-btn" [class.active]="selectedGuide === 'frontend'" (click)="selectedGuide = 'frontend'">
+        <span>2. Frontend (Vercel / Netlify)</span>
+      </button>
+      <button type="button" class="deploy-tab-nav-btn" [class.active]="selectedGuide === 'database'" (click)="selectedGuide = 'database'">
+        <span>3. PostgreSQL Database</span>
+      </button>
+      <button type="button" class="deploy-tab-nav-btn" [class.active]="selectedGuide === 'auth'" (click)="selectedGuide = 'auth'">
+        <span>4. Google &amp; SMS Setup</span>
+      </button>
+      <button type="button" class="deploy-tab-nav-btn" [class.active]="selectedGuide === 'env'" (click)="selectedGuide = 'env'">
+        <span>5. Production .env Generator</span>
+      </button>
+    </div>
+
+    <!-- GUIDE 1: Backend Deployment -->
+    <div *ngIf="selectedGuide === 'backend'" class="guide-content-panel">
+      <div class="guide-step-card">
+        <div class="step-badge">Step 1</div>
+        <div class="step-body">
+          <h3>Deploy Python Flask API to Render or Railway</h3>
+          <p>The backend is pre-configured with a production <code>Procfile</code> and <code>gunicorn</code> server.</p>
+          <div class="instructions-list">
+            <div class="instruction-row">
+              <span class="num">1</span>
+              <div>
+                <strong>Connect GitHub Repository</strong>
+                <p>Go to <a href="https://dashboard.render.com" target="_blank" class="external-link">Render Dashboard</a> &gt; Click <em>New +</em> &gt; <em>Web Service</em> &gt; Select your repository <code>ashique543/ShaifyStyles</code>.</p>
+              </div>
+            </div>
+            <div class="instruction-row">
+              <span class="num">2</span>
+              <div>
+                <strong>Set Service Settings</strong>
+                <div class="key-value-box">
+                  <div><strong>Root Directory:</strong> <code>backend</code></div>
+                  <div><strong>Runtime:</strong> <code>Python 3</code></div>
+                  <div><strong>Build Command:</strong> <code>pip install -r requirements.txt</code></div>
+                  <div><strong>Start Command:</strong> <code>gunicorn -w 4 -b 0.0.0.0:$PORT "run:app"</code></div>
+                </div>
+              </div>
+            </div>
+            <div class="instruction-row">
+              <span class="num">3</span>
+              <div>
+                <strong>Create Admin User on Production</strong>
+                <p>From the Render/Railway shell terminal, run the seed command to create your live store admin:</p>
+                <div class="code-snippet-box">
+                  <code>flask create-admin --username admin --email owner&#64;shaifystyles.com</code>
+                  <button type="button" class="copy-code-btn" (click)="copyText('flask create-admin --username admin --email owner@shaifystyles.com')">Copy</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GUIDE 2: Frontend Deployment -->
+    <div *ngIf="selectedGuide === 'frontend'" class="guide-content-panel">
+      <div class="guide-step-card">
+        <div class="step-badge">Step 2</div>
+        <div class="step-body">
+          <h3>Deploy Angular Frontend to Vercel or Netlify</h3>
+          <p>Vercel and Netlify offer ultra-fast global CDN delivery with zero-downtime deploys. SPA routing rewrites are pre-packaged in <code>frontend/vercel.json</code> and <code>frontend/public/_redirects</code>.</p>
+          
+          <div class="instructions-list">
+            <div class="instruction-row">
+              <span class="num">1</span>
+              <div>
+                <strong>Deploy with Vercel (Recommended)</strong>
+                <p>Log in at <a href="https://vercel.com" target="_blank" class="external-link">Vercel.com</a> &gt; <em>Add New...</em> &gt; <em>Project</em> &gt; Import <code>ashique543/ShaifyStyles</code>.</p>
+                <div class="key-value-box">
+                  <div><strong>Root Directory:</strong> <code>frontend</code></div>
+                  <div><strong>Framework Preset:</strong> <code>Angular</code></div>
+                  <div><strong>Build Command:</strong> <code>npm run build</code></div>
+                  <div><strong>Output Directory:</strong> <code>dist/frontend/browser</code></div>
+                </div>
+              </div>
+            </div>
+            <div class="instruction-row">
+              <span class="num">2</span>
+              <div>
+                <strong>Connect Frontend to Live Backend API</strong>
+                <p>In Vercel Project Settings &gt; <em>Environment Variables</em>, add:</p>
+                <div class="code-snippet-box">
+                  <code>API_URL=https://shaify-styles-api.onrender.com/api</code>
+                  <button type="button" class="copy-code-btn" (click)="copyText('API_URL=https://shaify-styles-api.onrender.com/api')">Copy</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GUIDE 3: Database Setup -->
+    <div *ngIf="selectedGuide === 'database'" class="guide-content-panel">
+      <div class="guide-step-card">
+        <div class="step-badge">Step 3</div>
+        <div class="step-body">
+          <h3>Provision Free PostgreSQL Database</h3>
+          <p>For high-performance order tracking and concurrent customers, connect a managed PostgreSQL instance.</p>
+          <div class="instructions-list">
+            <div class="instruction-row">
+              <span class="num">1</span>
+              <div>
+                <strong>Choose a Free PostgreSQL Provider:</strong>
+                <ul>
+                  <li><strong>Render Postgres:</strong> Click <em>New +</em> &gt; <em>PostgreSQL</em> in Render.</li>
+                  <li><strong>Neon.tech:</strong> Instant serverless PostgreSQL (<a href="https://neon.tech" target="_blank" class="external-link">neon.tech</a>).</li>
+                  <li><strong>Supabase:</strong> Free managed PostgreSQL (<a href="https://supabase.com" target="_blank" class="external-link">supabase.com</a>).</li>
+                </ul>
+              </div>
+            </div>
+            <div class="instruction-row">
+              <span class="num">2</span>
+              <div>
+                <strong>Set DATABASE_URL in Backend Environment</strong>
+                <p>Copy the connection string (starting with <code>postgresql://...</code>) into your backend service environment variables:</p>
+                <div class="code-snippet-box">
+                  <code>DATABASE_URL=postgresql://user:password&#64;ep-lucky-pool.neon.tech/shaifystyles?sslmode=require</code>
+                  <button type="button" class="copy-code-btn" (click)="copyText('DATABASE_URL=postgresql://user:password@ep-lucky-pool.neon.tech/shaifystyles?sslmode=require')">Copy</button>
+                </div>
+                <small class="deploy-note">Note: SQLAlchemy automatically detects PostgreSQL and provisions all tables (`products`, `orders`, `order_items`, `users`, `otp_store`, `admins`) on startup!</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GUIDE 4: Google OAuth & Mobile SMS Setup -->
+    <div *ngIf="selectedGuide === 'auth'" class="guide-content-panel">
+      <div class="guide-step-card">
+        <div class="step-badge">Step 4</div>
+        <div class="step-body">
+          <h3>Setup Customer Google Login &amp; SMS OTP</h3>
+          
+          <div class="auth-setup-grid">
+            <!-- Google Guide -->
+            <div class="auth-subcard">
+              <h4>🌐 Google Sign-In Setup</h4>
+              <ol class="auth-steps-ol">
+                <li>Visit <a href="https://console.cloud.google.com" target="_blank" class="external-link">Google Cloud Console</a> &gt; Create a project <code>Shaify Styles</code>.</li>
+                <li>Go to <em>APIs &amp; Services</em> &gt; <em>Credentials</em> &gt; <em>Create Credentials</em> &gt; <em>OAuth client ID</em>.</li>
+                <li>Application type: <strong>Web application</strong>.</li>
+                <li>Add your frontend URL under <em>Authorized JavaScript origins</em>:
+                  <div class="code-snippet-box mini">
+                    <code>https://shaifystyles.vercel.app</code>
+                    <button type="button" class="copy-code-btn" (click)="copyText('https://shaifystyles.vercel.app')">Copy</button>
+                  </div>
+                </li>
+                <li>Copy the generated <strong>Client ID</strong> and add it to your <code>GOOGLE_CLIENT_ID</code> variable.</li>
+              </ol>
+            </div>
+
+            <!-- SMS Guide -->
+            <div class="auth-subcard">
+              <h4>📱 Fast2SMS or Twilio OTP Setup</h4>
+              <ol class="auth-steps-ol">
+                <li>Sign up at <a href="https://www.fast2sms.com" target="_blank" class="external-link">Fast2SMS.com</a> (India DLT/Quick OTP) or <a href="https://www.twilio.com" target="_blank" class="external-link">Twilio</a>.</li>
+                <li>Copy your Fast2SMS API key from your dashboard.</li>
+                <li>Set the environment variables in your backend:
+                  <div class="code-snippet-box mini">
+                    <code>SMS_GATEWAY=fast2sms<br>FAST2SMS_API_KEY=your_live_api_key_here</code>
+                    <button type="button" class="copy-code-btn" (click)="copyText('SMS_GATEWAY=fast2sms\nFAST2SMS_API_KEY=your_live_api_key_here')">Copy</button>
+                  </div>
+                </li>
+                <li>When left unset, the store operates in <em>Simulation Mode</em> (OTP code <strong>123456</strong> is displayed directly on the screen and in terminal logs).</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GUIDE 5: Environment Variables Generator -->
+    <div *ngIf="selectedGuide === 'env'" class="guide-content-panel">
+      <div class="guide-step-card">
+        <div class="step-badge">Step 5</div>
+        <div class="step-body">
+          <div class="env-header-row">
+            <div>
+              <h3>Production Environment Variables Cheat Sheet</h3>
+              <p>Copy these variables directly into your Render / Railway / Server configuration:</p>
+            </div>
+            <button type="button" class="admin-btn admin-btn-primary" (click)="copyAllEnv()">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>{{ copiedNotice ? 'Copied to Clipboard!' : 'Copy All Variables' }}</span>
+            </button>
+          </div>
+
+          <pre class="env-block"><code>{{ envTemplate }}</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

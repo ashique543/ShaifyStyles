@@ -11,6 +11,8 @@ import { ProductDetailsModalComponent } from '../../components/product-details-m
 import { CartDrawerComponent } from '../../components/cart-drawer/cart-drawer.component';
 import { OrderConfirmationModalComponent } from '../../components/order-confirmation-modal/order-confirmation-modal.component';
 import { FooterComponent } from '../../components/footer/footer.component';
+import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
+import { OrdersModalComponent } from '../../components/orders-modal/orders-modal.component';
 
 @Component({
   selector: 'app-storefront',
@@ -24,7 +26,9 @@ import { FooterComponent } from '../../components/footer/footer.component';
     ProductDetailsModalComponent,
     CartDrawerComponent,
     OrderConfirmationModalComponent,
-    FooterComponent
+    FooterComponent,
+    AuthModalComponent,
+    OrdersModalComponent
   ],
   templateUrl: './storefront.component.html'
 })

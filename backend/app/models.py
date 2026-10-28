@@ -18,7 +18,7 @@ class Product(db.Model):
     discounted_price = db.Column(db.Float, nullable=True)
     image_url = db.Column(db.Text, nullable=False)
     stock = db.Column(db.Integer, default=10, nullable=False)
-    sizes = db.Column(db.Text, default='["Standard"]') # Stored as JSON string for broad SQLite/PostgreSQL compatibility
+    sizes = db.Column(db.Text, default='["Standard"]') # Stored as JSON string
     badge = db.Column(db.String(50), nullable=True) # e.g. "Bestseller", "New Launch", "Handmade"
     fabric = db.Column(db.String(100), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -59,10 +59,55 @@ class Product(db.Model):
         }
 
 
+class User(db.Model):
+    """Customer user account for boutique shoppers supporting Google & Mobile OTP login."""
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False, default='Boutique Shopper')
+    email = db.Column(db.String(200), unique=True, nullable=True, index=True)
+    phone = db.Column(db.String(50), unique=True, nullable=True, index=True)
+    avatar_url = db.Column(db.Text, nullable=True)
+    google_id = db.Column(db.String(255), unique=True, nullable=True, index=True)
+    auth_provider = db.Column(db.String(50), default='phone', nullable=False) # 'google', 'phone'
+    default_address = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Orders relationship
+    orders = db.relationship('Order', back_populates='user', lazy='dynamic')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'phone': self.phone,
+            'avatar_url': self.avatar_url,
+            'auth_provider': self.auth_provider,
+            'default_address': self.default_address,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'last_login': self.last_login.isoformat() if self.last_login else None
+        }
+
+
+class OTPStore(db.Model):
+    """Store for mobile phone OTP verification codes with expiry."""
+    __tablename__ = 'otp_store'
+
+    id = db.Column(db.Integer, primary_key=True)
+    phone = db.Column(db.String(50), nullable=False, index=True)
+    otp_code = db.Column(db.String(10), nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    verified = db.Column(db.Boolean, default=False, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 class Order(db.Model):
     __tablename__ = 'orders'
     
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     razorpay_order_id = db.Column(db.String(100), nullable=True, index=True)
     razorpay_payment_id = db.Column(db.String(100), nullable=True)
     razorpay_signature = db.Column(db.String(255), nullable=True)
@@ -79,11 +124,13 @@ class Order(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
+    user = db.relationship('User', back_populates='orders')
     items = db.relationship('OrderItem', back_populates='order', cascade='all, delete-orphan')
 
     def to_dict(self):
         return {
             'id': self.id,
+            'user_id': self.user_id,
             'razorpay_order_id': self.razorpay_order_id,
             'razorpay_payment_id': self.razorpay_payment_id,
             'customer_name': self.customer_name,
