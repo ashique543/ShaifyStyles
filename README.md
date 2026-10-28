@@ -1,23 +1,60 @@
-# 🌸 Shaify Styles — Full-Stack E-Commerce Platform
+# 🌸 Shaify Styles — Full-Stack E-Commerce & Boutique Management Platform
 
 [![Instagram](https://img.shields.io/badge/Instagram-%40shaifystyles__-E4405F?logo=instagram&logoColor=white)](https://instagram.com/shaifystyles_)
 [![Frontend](https://img.shields.io/badge/Frontend-Angular%20Standalone-DD0031?logo=angular&logoColor=white)](https://angular.dev)
 [![Backend](https://img.shields.io/badge/Backend-Python%20Flask-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com)
 [![Payments](https://img.shields.io/badge/Payments-Razorpay-0C2340?logo=razorpay&logoColor=blue)](https://razorpay.com)
 [![Database](https://img.shields.io/badge/Database-PostgreSQL%20%7C%20SQLite-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![Admin](https://img.shields.io/badge/Admin%20Panel-JWT%20Secured-7B1FA2?logo=jsonwebtokens&logoColor=white)](http://localhost:4200/admin/login)
 
-An elegant, full-stack boutique e-commerce web platform for **"Shaify Styles"** ([@shaifystyles_](https://instagram.com/shaifystyles_)) specializing in:
-- **Modest Fashion**: Pakistani luxury lawn suits, ceremonial farshi gharara ensembles, and daily Lucknowi Chikankari kurtis.
-- **Handcrafted Hijab Bouquets**: Signature blooming rose hijab arrangements crafted with modal & silk georgette hijabs, pearl pins, and dried baby's breath.
-- **Custom Gift Hampers**: Bespoke bridal keepsakes, Eid celebration boxes, and self-care trunks.
+A comprehensive, full-stack boutique e-commerce platform and dedicated Store Owner Admin Panel for **"Shaify Styles"** ([@shaifystyles_](https://instagram.com/shaifystyles_)), specializing in:
+- **Modest Fashion**: Pakistani luxury lawn suits, ceremonial farshi gharara ensembles, and authentic Lucknowi Chikankari kurtis.
+- **Handcrafted Hijab Bouquets**: Signature blooming rose hijab arrangements folded with premium georgette and modal hijabs, pearl pins, and dried baby's breath.
+- **Custom Gift Hampers**: Bespoke bridal keepsake trunks, Eid celebration boxes, and personalized greeting notes.
 
 ---
 
-## 🎨 Brand Aesthetic & Design System
+## 🎨 Design System & Aesthetics
 
-- **Color Palette**: Warm boutique luxury neutrals — Cream (`#FAF7F2`), Deep Rose (`#A3485E`), Muted Gold (`#C5A059`), and Charcoal (`#252021`).
-- **Typography**: Google Fonts *Playfair Display* (luxury editorial serif headings) paired with *Plus Jakarta Sans* (clean readable sans-serif).
-- **Features**: Announcement banner, interactive category chips, real-time search, responsive product cards, WhatsApp direct inquiries, cart drawer with free shipping progress bar, and Razorpay modal checkout.
+- **Color Palette**: Luxury rose wine (`#A3485E`), dark burgundy (`#873649`), champagne gold (`#C5A059`), warm cream (`#FAF7F2`), and deep charcoal (`#252021`).
+- **Typography**: Google Fonts *Playfair Display* (luxury editorial serif headings) paired with *Plus Jakarta Sans* (clean modern sans-serif body).
+- **Clean Architecture**: Clean separation of concerns with standalone HTML templates, TypeScript logic classes, and a unified global design system in `styles.css`.
+
+---
+
+## ✨ Key Features
+
+### 🛍️ Customer Boutique Storefront (`/`)
+1. **Interactive Catalog**: Filter by category chips, instant keyword search, and sorting (Featured, Price Low to High, Price High to Low, Newest).
+2. **Product Details Modal**: High-res imagery, fabric details, size/style selector, inventory availability, and pre-filled WhatsApp inquiry links.
+3. **Slide-in Cart Drawer**: Real-time quantity adjustment, free shipping threshold progress tracker, and delivery address form.
+4. **Razorpay Payment Gateway**: Seamless integration supporting UPI (Google Pay, PhonePe, Paytm), Credit/Debit cards, NetBanking, and a simulated fallback demo mode.
+5. **Order Confirmation & Tracking**: Receipt modal with unique Order IDs (`#SS-xxx`) and direct one-click WhatsApp order tracking.
+
+### 🛡️ Store Owner Admin Panel (`/admin`)
+1. **JWT-Secured Authentication**: Protected routes via Angular `authGuard` and Flask-JWT-Extended backend authorization.
+2. **Live Sales Dashboard**: KPI metric cards for Total Revenue, Total Orders, Pending Dispatches, and Low Stock inventory alerts.
+3. **Product Management**: Full CRUD operations to create, edit, and delete products, toggle size options, update stock units, and upload product imagery directly.
+4. **Order Fulfillment & Logistics**: Filter orders by status, update fulfillment state (`created` ➔ `paid` ➔ `processing` ➔ `shipped` ➔ `delivered`), assign tracking carrier and AWB numbers, and add internal notes.
+5. **One-Click WhatsApp Dispatch**: Generates pre-formatted WhatsApp customer dispatch messages with tracking info and order details ready to send.
+
+---
+
+## 🔑 Default Admin Credentials
+
+| Field | Value |
+|---|---|
+| **Admin Login URL** | [http://localhost:4200/admin/login](http://localhost:4200/admin/login) |
+| **Username** | `admin` |
+| **Password** | `admin123` |
+| **Email** | `admin@shaifystyles.com` |
+
+> [!TIP]
+> You can also create additional admin accounts using the Flask CLI:
+> ```bash
+> cd backend
+> flask create-admin --username owner --email owner@shaifystyles.com
+> ```
 
 ---
 
@@ -25,46 +62,66 @@ An elegant, full-stack boutique e-commerce web platform for **"Shaify Styles"** 
 
 ```
 ecommerce/
-├── backend/                  # Python Flask REST API
+├── backend/                              # Python Flask REST API
 │   ├── app/
 │   │   ├── routes/
 │   │   │   ├── __init__.py
-│   │   │   ├── products.py   # Product list, category filter, search, sort
-│   │   │   └── orders.py     # Razorpay order create, signature verification
-│   │   ├── __init__.py       # App factory, CORS, DB init, auto-seed
-│   │   ├── config.py         # Config with PostgreSQL/SQLite fallback
-│   │   ├── models.py         # Product, Order, OrderItem SQLAlchemy models
-│   │   └── seed.py           # Initial boutique catalog seed data
-│   ├── .env.example          # Sample environment variables
-│   ├── requirements.txt      # Python dependencies
-│   └── run.py                # Server entry point
+│   │   │   ├── products.py               # Public catalog endpoints (filter, search, sort)
+│   │   │   ├── orders.py                 # Order creation & Razorpay payment verification
+│   │   │   └── admin.py                  # JWT Auth, metrics, product CRUD & order management
+│   │   ├── __init__.py                   # App factory, JWT setup, CORS, auto-seed
+│   │   ├── config.py                     # PostgreSQL/SQLite configuration & JWT secret
+│   │   ├── models.py                     # SQLAlchemy models: Product, Order, OrderItem, Admin
+│   │   └── seed.py                       # Initial 10-product catalog seed data
+│   ├── uploads/                          # Local image upload storage
+│   ├── .env.example                      # Sample backend environment variables
+│   ├── requirements.txt                  # Python dependencies
+│   └── run.py                            # Flask server runner
 │
-├── frontend/                 # Angular Standalone Web App
+├── frontend/                             # Angular Standalone Web App
 │   ├── public/
-│   │   └── assets/images/    # Generated boutique hero & product photography
+│   │   └── assets/images/                # Boutique photography and hero banner
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── components/
-│   │   │   │   ├── navbar/                     # Announcement bar & header
-│   │   │   │   ├── hero/                       # Hero section with value props
-│   │   │   │   ├── product-card/               # Product card with badges
-│   │   │   │   ├── product-details-modal/      # Size selector, WhatsApp inquiry
-│   │   │   │   ├── cart-drawer/                # Slide-in bag, shipping form, Razorpay
-│   │   │   │   ├── order-confirmation-modal/   # Receipt screen with WhatsApp tracking
-│   │   │   │   └── footer/                     # Boutique footer & policies
-│   │   │   ├── models/                         # TypeScript interfaces
-│   │   │   ├── services/
-│   │   │   │   ├── api.service.ts              # REST API client
-│   │   │   │   └── cart.service.ts             # Signal-based cart & localStorage
-│   │   │   ├── app.ts                          # Main application component
-│   │   │   ├── app.html                        # Main template
-│   │   │   └── app.css                         # App-specific styles
-│   │   ├── index.html                          # Fonts, SEO, and Razorpay script
-│   │   └── styles.css                          # Global design system & utilities
+│   │   │   ├── admin/                    # Dedicated Store Owner Admin Module
+│   │   │   │   ├── components/
+│   │   │   │   │   ├── admin-layout.component.ts/.html     # Admin layout shell
+│   │   │   │   │   ├── admin-sidebar.component.ts/.html    # Collapsible sidebar
+│   │   │   │   │   └── admin-toasts.component.ts/.html     # Alert notifications
+│   │   │   │   ├── guards/
+│   │   │   │   │   └── auth.guard.ts                       # Angular route protection
+│   │   │   │   ├── models/
+│   │   │   │   │   └── admin.models.ts                     # Admin TypeScript interfaces
+│   │   │   │   ├── pages/
+│   │   │   │   │   ├── login/admin-login.component.ts/.html
+│   │   │   │   │   ├── dashboard/admin-dashboard.component.ts/.html
+│   │   │   │   │   ├── products/admin-products.component.ts/.html
+│   │   │   │   │   └── orders/admin-orders.component.ts/.html
+│   │   │   │   └── services/
+│   │   │   │       ├── admin-api.service.ts                # Admin REST client with JWT
+│   │   │   │       └── admin-auth.service.ts               # Session storage & auth state
+│   │   │   ├── components/               # Customer Storefront Components
+│   │   │   │   ├── navbar/               # Announcement bar & header (.ts / .html)
+│   │   │   │   ├── hero/                 # Hero section & value props (.ts / .html)
+│   │   │   │   ├── product-card/         # Product card with badges (.ts / .html)
+│   │   │   │   ├── product-details-modal/# Size selector & WhatsApp inquiry (.ts / .html)
+│   │   │   │   ├── cart-drawer/          # Shopping bag & checkout (.ts / .html)
+│   │   │   │   ├── order-confirmation-modal/ # Order receipt (.ts / .html)
+│   │   │   │   └── footer/               # Boutique policies & admin link (.ts / .html)
+│   │   │   ├── pages/
+│   │   │   │   └── storefront/           # Customer storefront page (.ts / .html)
+│   │   │   ├── models/                   # Product & Order customer models
+│   │   │   ├── services/                 # ApiService & CartService
+│   │   │   ├── app.routes.ts             # Storefront and Admin route definitions
+│   │   │   ├── app.ts                    # Root component with router-outlet
+│   │   │   └── app.html                  # Root template
+│   │   ├── index.html                    # Typography, SEO meta tags, Razorpay SDK
+│   │   └── styles.css                    # Consolidated global stylesheet
 │   └── package.json
 │
-├── .env.example              # Workspace environment template
-└── README.md                 # Full documentation
+├── .env.example                          # Root environment template
+├── .gitignore                            # Clean ignores for node_modules, .db, cache, env
+└── README.md                             # Documentation
 ```
 
 ---
@@ -72,14 +129,14 @@ ecommerce/
 ## 🚀 Quick Start (Local Development)
 
 ### 1. Prerequisites
-- **Python 3.10+** (tested on 3.14)
+- **Python 3.10+**
 - **Node.js v18+** & **npm**
 
 ### 2. Backend Setup
 ```bash
 cd backend
 
-# (Optional) Create and activate virtual environment
+# (Optional) Create & activate virtual environment
 python -m venv venv
 # Windows:
 .\venv\Scripts\activate
@@ -91,24 +148,54 @@ pip install -r requirements.txt
 
 # Configure environment
 cp .env.example .env
-# Edit .env if you wish to configure real Razorpay keys or PostgreSQL
 
-# Run the Flask API server (auto-creates tables and seeds catalog)
+# Run the Flask API server (auto-creates SQLite tables, seeds catalog and default admin)
 python run.py
 ```
-The Flask API will start at: `http://127.0.0.1:5000`
+> The Flask API will start at: **`http://127.0.0.1:5000`**
 
 ### 3. Frontend Setup
 ```bash
 cd frontend
 
-# Install packages
+# Install dependencies
 npm install
 
-# Start the Angular development server
+# Start Angular development server
 npm start
 ```
-The Angular boutique storefront will be live at: `http://localhost:4200`
+> The Angular storefront will be available at: **`http://localhost:4200`**  
+> Access the Store Admin Panel at: **`http://localhost:4200/admin`**
+
+---
+
+## 📡 REST API Reference
+
+### Public Customer Endpoints
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/health` | Backend status, DB connection, and brand info |
+| `GET` | `/api/products` | Query catalog (`?category=...&search=...&sort=price_asc\|price_desc\|newest`) |
+| `GET` | `/api/products/<id>` | Retrieve detailed product data |
+| `GET` | `/api/products/categories` | Retrieve available boutique categories |
+| `POST` | `/api/orders/create` | Calculate total, initialize Razorpay order ID, save pending order |
+| `POST` | `/api/orders/verify` | Verify Razorpay HMAC signature, mark order as "paid", decrement stock |
+| `GET` | `/api/orders/<id>` | Fetch order receipt and delivery details |
+
+### Protected Store Admin Endpoints (Require `Bearer <JWT_TOKEN>`)
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/admin/login` | Authenticate admin user and issue JWT access token |
+| `GET` | `/api/admin/me` | Fetch currently logged-in admin user profile |
+| `GET` | `/api/admin/metrics` | Retrieve dashboard KPI metrics (revenue, orders, low-stock alerts) |
+| `GET` | `/api/admin/products` | Paginated product listing with filters |
+| `POST` | `/api/admin/products` | Create a new boutique product |
+| `PUT` | `/api/admin/products/<id>` | Update an existing product (stock, price, sizes, etc.) |
+| `DELETE` | `/api/admin/products/<id>` | Delete a product from the catalog |
+| `POST` | `/api/admin/upload` | Upload a product image directly (multipart/form-data) |
+| `GET` | `/api/admin/orders` | Query orders with status, date range, and search filters |
+| `GET` | `/api/admin/orders/<id>` | Fetch detailed order information with item breakdown |
+| `PUT` | `/api/admin/orders/<id>/status` | Update fulfillment status, tracking carrier/AWB, and staff notes |
 
 ---
 
@@ -125,72 +212,32 @@ The platform integrates the **Razorpay Payment Gateway**:
    - Wallets & PayLater
 
 2. **Simulated / Dev Demo Mode**:
-   If dummy keys or no keys are configured in `.env`, the platform automatically switches to **Demo Mode**. You can place orders, receive simulated payment IDs, verify signatures, decrement inventory, and view the receipt without needing live banking credentials.
+   If test keys or mock values are configured in `.env`, the platform automatically activates **Demo Mode**. You can place orders, receive simulated payment IDs, verify signatures, decrement inventory, and view the receipt without needing live banking credentials.
 
 ---
 
-## 📡 REST API Documentation
+## 🚢 Production Deployment
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/health` | Backend status, DB connection, and brand info |
-| `GET` | `/api/products` | Query products (`?category=...&search=...&sort=price_asc\|price_desc\|newest`) |
-| `GET` | `/api/products/<id>` | Retrieve detailed product information |
-| `GET` | `/api/products/categories` | Retrieve available categories |
-| `POST` | `/api/orders/create` | Calculate server-side total, initialize Razorpay order, save pending order |
-| `POST` | `/api/orders/verify` | Verify Razorpay HMAC SHA256 signature, mark order as "paid", decrement stock |
-| `GET` | `/api/orders/<id>` | Fetch order receipt and delivery details |
-
----
-
-## 🚢 Deployment Guide
-
-### Deploying the Backend (Render / Railway)
-
-#### Option A: Render
-1. Create a new **Web Service** on [Render](https://render.com).
-2. Connect your Git repository.
-3. Configure the service:
-   - **Root Directory**: `backend`
-   - **Environment**: `Python`
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `gunicorn -w 4 -b 0.0.0.0:$PORT "app:create_app()"`
-4. Add Environment Variables in Render:
-   - `DATABASE_URL`: Your PostgreSQL connection string (Render auto-provides this if you add a Render PostgreSQL database)
-   - `RAZORPAY_KEY_ID`: `rzp_live_...` or `rzp_test_...`
-   - `RAZORPAY_KEY_SECRET`: Your Razorpay Secret
+### Backend Deployment (Render / Railway / VPS)
+1. Set **Root Directory** to `backend`.
+2. Set **Build Command**: `pip install -r requirements.txt`.
+3. Set **Start Command**: `gunicorn -w 4 -b 0.0.0.0:$PORT "app:create_app()"`.
+4. Configure environment variables:
+   - `DATABASE_URL`: PostgreSQL connection string (`postgresql://...`)
+   - `JWT_SECRET_KEY`: Long random secret string
+   - `RAZORPAY_KEY_ID` & `RAZORPAY_KEY_SECRET`: Live credentials
    - `FLASK_ENV`: `production`
 
-#### Option B: Railway
-1. Create a new project on [Railway](https://railway.app).
-2. Provision a **PostgreSQL** service and a **Python** service connected to `/backend`.
-3. Railway automatically sets `DATABASE_URL` from the provisioned PostgreSQL instance.
-4. Set the start command to `gunicorn -w 4 -b 0.0.0.0:$PORT "app:create_app()"`.
+### Frontend Deployment (Vercel / Netlify / Cloudflare Pages)
+1. Set **Root Directory** to `frontend`.
+2. Set **Build Command**: `npm run build`.
+3. Set **Output Directory**: `dist/frontend/browser`.
+4. Ensure SPA rewrite rule (`/*` ➔ `/index.html`) is enabled for Angular routing.
 
 ---
 
-### Deploying the Frontend (Vercel / Netlify)
+## 🌸 Brand Support & Social Links
 
-#### Option A: Vercel
-1. Import your repository into [Vercel](https://vercel.com).
-2. Set **Root Directory** to `frontend`.
-3. Set **Framework Preset** to `Angular`.
-4. Build settings:
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist/frontend/browser`
-5. Environment Variables:
-   - If hosting backend on a separate domain, configure the API proxy in `vercel.json` or update `ApiService.baseUrl`.
-
-#### Option B: Netlify
-1. Create a new site from Git on [Netlify](https://netlify.com).
-2. Set base directory to `frontend`.
-3. Build command: `npm run build`
-4. Publish directory: `frontend/dist/frontend/browser`
-
----
-
-## 💬 WhatsApp Boutique Integration
-
-Every product card and details modal includes a dynamic **"Inquire on WhatsApp"** link:
-- Prefills the WhatsApp message with the product title, selected size, and price.
-- Connects directly to the Shaify Styles team (`@shaifystyles_`) for bespoke color requests, ribbon customizations, and personalized greeting cards.
+- **Instagram**: [@shaifystyles_](https://instagram.com/shaifystyles_)
+- **WhatsApp Inquiries**: `+91 98765 43210`
+- **License**: MIT
