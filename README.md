@@ -73,11 +73,23 @@ A comprehensive, full-stack boutique e-commerce platform and dedicated Store Own
 ecommerce/
 ├── backend/                              # Python Flask REST API
 │   ├── app/
-│   │   ├── routes/
-│   │   │   ├── __init__.py
-│   │   │   ├── products.py               # Public catalog endpoints (filter, search, sort)
-│   │   │   ├── orders.py                 # Order creation & Razorpay payment verification
-│   │   │   └── admin.py                  # JWT Auth, metrics, product CRUD & order management
+│   │   ├── controllers/                  # Controller layer: Blueprints & API endpoints
+│   │   │   ├── admin_controller.py
+│   │   │   ├── auth_controller.py
+│   │   │   ├── order_controller.py
+│   │   │   └── product_controller.py
+│   │   ├── services/                     # Service layer: Business & checkout domain logic
+│   │   │   ├── admin_service.py
+│   │   │   ├── auth_service.py
+│   │   │   ├── order_service.py
+│   │   │   └── product_service.py
+│   │   ├── repositories/                 # Repository layer: All SQLAlchemy database operations
+│   │   │   ├── base_repository.py
+│   │   │   ├── admin_repository.py
+│   │   │   ├── order_repository.py
+│   │   │   ├── otp_repository.py
+│   │   │   ├── product_repository.py
+│   │   │   └── user_repository.py
 │   │   ├── __init__.py                   # App factory, JWT setup, CORS, auto-seed
 │   │   ├── config.py                     # PostgreSQL/SQLite configuration & JWT secret
 │   │   ├── models.py                     # SQLAlchemy models: Product, Order, OrderItem, Admin
@@ -85,7 +97,7 @@ ecommerce/
 │   ├── uploads/                          # Local image upload storage
 │   ├── .env.example                      # Sample backend environment variables
 │   ├── requirements.txt                  # Python dependencies
-│   └── run.py                            # Flask server runner
+│   └── app.py                            # Flask server runner (python app.py)
 │
 ├── frontend/                             # Angular Standalone Web App
 │   ├── public/
@@ -130,8 +142,23 @@ ecommerce/
 │
 ├── .env.example                          # Root environment template
 ├── .gitignore                            # Clean ignores for node_modules, .db, cache, env
-└── README.md                             # Documentation
 ```
+
+### 🏛️ Backend 3-Tier Architecture Pattern
+
+The backend follows a strict separation of concerns:
+```
+[Client / Angular] ◄──HTTP──► [Controllers] ◄────► [Services] ◄────► [Repositories] ◄────► [SQLAlchemy / DB]
+```
+1. **Controller Layer (`backend/app/controllers/`)**:
+   - Manages HTTP routing, request parameter/body validation, JWT identity resolution, and response serialization.
+   - Delegates all business logic to services.
+2. **Service Layer (`backend/app/services/`)**:
+   - Contains all domain logic, payment verification (Razorpay SDK / HMAC), stock availability checks, OTP dispatch, and external API communication.
+   - Interacts strictly with the Repository layer for database operations.
+3. **Repository Layer (`backend/app/repositories/`)**:
+   - Encapsulates all SQLAlchemy queries, CRUD mutations, filters, pagination, and database transactions (`db.session`).
+   - Zero HTTP or business logic.
 
 ---
 
@@ -159,7 +186,7 @@ pip install -r requirements.txt
 cp .env.example .env
 
 # Run the Flask API server (auto-creates SQLite tables, seeds catalog and default admin)
-python run.py
+python app.py
 ```
 > The Flask API will start at: **`http://127.0.0.1:5000`**
 
@@ -184,12 +211,22 @@ npm start
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/api/health` | Backend status, DB connection, and brand info |
-| `GET` | `/api/products` | Query catalog (`?category=...&search=...&sort=price_asc\|price_desc\|newest`) |
+| `GET` | `/api/products` | Query catalog (`?category=...&search=...&sort=price_asc|price_desc|newest`) |
 | `GET` | `/api/products/<id>` | Retrieve detailed product data |
 | `GET` | `/api/products/categories` | Retrieve available boutique categories |
 | `POST` | `/api/orders/create` | Calculate total, initialize Razorpay order ID, save pending order |
 | `POST` | `/api/orders/verify` | Verify Razorpay HMAC signature, mark order as "paid", decrement stock |
 | `GET` | `/api/orders/<id>` | Fetch order receipt and delivery details |
+
+### Customer Authentication & Profile Endpoints
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/auth/google` | Public | Google Sign-In with OAuth token or email payload |
+| `POST` | `/api/auth/otp/send` | Public | Send 6-digit OTP code to 10-digit mobile number |
+| `POST` | `/api/auth/otp/verify` | Public | Verify OTP code and issue JWT access token |
+| `GET` | `/api/auth/me` | Bearer JWT | Retrieve current customer profile |
+| `PUT` | `/api/auth/me` | Bearer JWT | Update customer profile (name, email, default address) |
+| `GET` | `/api/auth/orders` | Bearer JWT | Retrieve customer personal order history |
 
 ### Protected Store Admin Endpoints (Require `Bearer <JWT_TOKEN>`)
 | Method | Endpoint | Description |
@@ -204,7 +241,8 @@ npm start
 | `POST` | `/api/admin/upload` | Upload a product image directly (multipart/form-data) |
 | `GET` | `/api/admin/orders` | Query orders with status, date range, and search filters |
 | `GET` | `/api/admin/orders/<id>` | Fetch detailed order information with item breakdown |
-| `PUT` | `/api/admin/orders/<id>/status` | Update fulfillment status, tracking carrier/AWB, and staff notes |
+| `PATCH` | `/api/admin/orders/<id>/status` | Update fulfillment status, tracking carrier/AWB, and staff notes |
+| `GET` | `/api/admin/deployment-status` | System health check (Database, Razorpay, Google OAuth, SMS, Media) |
 
 ---
 
@@ -230,7 +268,7 @@ The platform integrates the **Razorpay Payment Gateway**:
 ### Backend Deployment (Render / Railway / VPS)
 1. Set **Root Directory** to `backend`.
 2. Set **Build Command**: `pip install -r requirements.txt`.
-3. Set **Start Command**: `gunicorn -w 4 -b 0.0.0.0:$PORT "app:create_app()"`.
+3. Set **Start Command**: `gunicorn -w 4 -b 0.0.0.0:$PORT "app:app"`.
 4. Configure environment variables:
    - `DATABASE_URL`: PostgreSQL connection string (`postgresql://...`)
    - `JWT_SECRET_KEY`: Long random secret string

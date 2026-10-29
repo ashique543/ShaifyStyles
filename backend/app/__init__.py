@@ -5,11 +5,9 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from .config import Config
-from .models import db, bcrypt, Admin
-from .routes.products import products_bp
-from .routes.orders import orders_bp
-from .routes.admin import admin_bp
-from .routes.auth import auth_bp
+from .models import db, bcrypt
+from .repositories import AdminRepository
+from .controllers import products_bp, orders_bp, admin_bp, auth_bp
 from .seed import seed_database
 
 def create_app(config_class=Config):
@@ -28,7 +26,7 @@ def create_app(config_class=Config):
     bcrypt.init_app(app)
     JWTManager(app)
 
-    # Register Blueprints
+    # Register Blueprints (Controllers)
     app.register_blueprint(products_bp)
     app.register_blueprint(orders_bp)
     app.register_blueprint(admin_bp)
@@ -65,16 +63,13 @@ def create_app(config_class=Config):
     def create_admin_command(username, email, password):
         """Create the initial admin user for the Shaify Styles store panel."""
         with app.app_context():
-            existing = Admin.query.filter(
-                db.or_(Admin.username == username, Admin.email == email)
-            ).first()
+            admin_repo = AdminRepository()
+            existing = admin_repo.get_by_username_or_email(username, email)
             if existing:
                 click.echo(f'ERROR: Admin with username "{username}" or email "{email}" already exists.')
                 return
-            admin = Admin.create_admin(username, email, password)
-            db.session.add(admin)
-            db.session.commit()
-            click.echo(f'SUCCESS: Admin "{username}" created! You can now log in at /admin/login.')
+            admin = admin_repo.create(username, email, password)
+            click.echo(f'SUCCESS: Admin "{admin.username}" created! You can now log in at /admin/login.')
 
     # ── Ensure upload directory exists ────────────────────────────────────────
     upload_dir = app.config.get('UPLOAD_FOLDER', 'uploads')
@@ -83,9 +78,21 @@ def create_app(config_class=Config):
     # ── Create tables and auto-seed on startup ────────────────────────────────
     with app.app_context():
         db.create_all()
+        # Safe migration check for local SQLite when upgrading existing DBs
+        try:
+            with db.engine.connect() as conn:
+                conn.execute(db.text("ALTER TABLE orders ADD COLUMN user_id INTEGER REFERENCES users(id)"))
+                conn.commit()
+        except Exception:
+            pass
+
         try:
             seed_database()
         except Exception as e:
             app.logger.warning(f"Seed note: {e}")
 
     return app
+
+# Module-level instance for WSGI runners
+app = create_app()
+

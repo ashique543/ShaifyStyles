@@ -1,5 +1,4 @@
-import json
-from .models import db, Product
+from .repositories import ProductRepository
 
 INITIAL_PRODUCTS = [
     {
@@ -126,27 +125,15 @@ INITIAL_PRODUCTS = [
 
 def seed_database():
     """Seeds the database with initial Shaify Styles products if table is empty."""
-    existing_count = Product.query.count()
+    product_repo = ProductRepository()
+    existing_count = product_repo.count()
     if existing_count > 0:
         print(f"Database already contains {existing_count} products. Skipping initial seed.")
         return existing_count
     
     print("Seeding initial Shaify Styles boutique catalog...")
     for item in INITIAL_PRODUCTS:
-        product = Product(
-            title=item["title"],
-            description=item["description"],
-            category=item["category"],
-            price=item["price"],
-            discounted_price=item.get("discounted_price"),
-            image_url=item["image_url"],
-            stock=item.get("stock", 10),
-            sizes=json.dumps(item.get("sizes", ["Standard"])),
-            badge=item.get("badge"),
-            fabric=item.get("fabric")
-        )
-        db.session.add(product)
+        product_repo.create(item)
     
-    db.session.commit()
     print(f"Successfully seeded {len(INITIAL_PRODUCTS)} products.")
     return len(INITIAL_PRODUCTS)
