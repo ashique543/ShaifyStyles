@@ -145,4 +145,8 @@ export class AdminOrdersComponent implements OnInit {
     const text = encodeURIComponent(this.buildWhatsAppMessage(o));
     window.open(`https://wa.me/${phoneWithCountry}?text=${text}`, '_blank');
   }
+
+  downloadInvoice(o: AdminOrder, format: 'pdf' | 'html' = 'pdf'): void {
+    this.api.downloadInvoice(o.id, format);
+  }
 }

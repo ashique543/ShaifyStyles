@@ -37,6 +37,7 @@ export interface CreateOrderPayload {
   customer_phone: string;
   shipping_address: string | ShippingAddress;
   notes?: string;
+  coupon_code?: string;
 }
 
 export interface CreateOrderResponse {

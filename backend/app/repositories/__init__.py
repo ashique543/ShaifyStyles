@@ -4,6 +4,8 @@ from .order_repository import OrderRepository
 from .user_repository import UserRepository
 from .otp_repository import OTPRepository
 from .admin_repository import AdminRepository
+from .category_repository import CategoryRepository
+from .coupon_repository import CouponRepository
 
 __all__ = [
     'BaseRepository',
@@ -12,4 +14,7 @@ __all__ = [
     'UserRepository',
     'OTPRepository',
     'AdminRepository',
+    'CategoryRepository',
+    'CouponRepository',
 ]
+

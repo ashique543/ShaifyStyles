@@ -98,6 +98,21 @@ class OrderService:
         if total_amount <= 0 or not verified_items:
             return {'success': False, 'message': 'Cart contains no valid items'}, 400
 
+        # Apply promo coupon if supplied
+        coupon_code = (data.get('coupon_code') or '').strip().upper()
+        discount_amount = 0.0
+        if coupon_code:
+            try:
+                from ..repositories.coupon_repository import CouponRepository
+                coupon = CouponRepository().get_by_code(coupon_code)
+                if coupon and coupon.is_valid_for(total_amount):
+                    discount_amount = coupon.calculate_discount(total_amount)
+                    total_amount = max(1.0, round(total_amount - discount_amount, 2))
+                else:
+                    coupon_code = None
+            except Exception:
+                coupon_code = None
+
         amount_in_paise = int(round(total_amount * 100))
         key_id = config.get('RAZORPAY_KEY_ID', 'rzp_test_ShaifyKey')
         key_secret = config.get('RAZORPAY_KEY_SECRET', 'ShaifySecretKeyMock2025')
@@ -148,7 +163,9 @@ class OrderService:
             'shipping_address': shipping_address,
             'total_amount': total_amount,
             'status': 'created',
-            'notes': notes
+            'notes': notes,
+            'coupon_code': coupon_code,
+            'discount_amount': discount_amount
         }
 
         new_order = self.order_repo.create_order_with_items(order_fields, verified_items)
@@ -233,6 +250,15 @@ class OrderService:
 
         for item in updated_order.items:
             self.product_repo.decrement_stock(item.product_id, item.quantity)
+
+        if updated_order.coupon_code:
+            try:
+                from ..repositories.coupon_repository import CouponRepository
+                coupon = CouponRepository().get_by_code(updated_order.coupon_code)
+                if coupon:
+                    CouponRepository().increment_usage(coupon)
+            except Exception:
+                pass
 
         return {
             'success': True,

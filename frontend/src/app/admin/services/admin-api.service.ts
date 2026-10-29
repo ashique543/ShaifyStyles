@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import {
   Admin, AdminLoginResponse, DashboardMetrics,
-  AdminProduct, AdminOrder
+  AdminProduct, AdminOrder, AdminCategory, AdminCoupon
 } from '../models/admin.models';
 
 @Injectable({ providedIn: 'root' })
@@ -80,6 +80,71 @@ export class AdminApiService {
     payload: { status?: string; tracking_carrier?: string; tracking_number?: string; notes?: string }
   ): Observable<{ success: boolean; order: AdminOrder; message: string }> {
     return this.http.patch<any>(`${this.baseUrl}/orders/${id}/status`, payload, { headers: this.getHeaders() });
+  }
+
+  downloadInvoice(id: number, format: 'pdf' | 'html' = 'pdf'): void {
+    const token = localStorage.getItem('shaify_admin_token');
+    const url = `${this.baseUrl}/orders/${id}/invoice?format=${format}`;
+    // Fetch with Authorization header and trigger browser download / open
+    fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to generate invoice');
+        return res.blob();
+      })
+      .then(blob => {
+        const fileUrl = window.URL.createObjectURL(blob);
+        if (format === 'html') {
+          const w = window.open(fileUrl, '_blank');
+          if (w) w.focus();
+        } else {
+          const a = document.createElement('a');
+          a.href = fileUrl;
+          a.download = `invoice-SS-${id}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }
+      })
+      .catch(err => {
+        console.error('Invoice download error:', err);
+        alert('Could not download invoice. Please try again.');
+      });
+  }
+
+  // ── Categories ────────────────────────────────────────────────────────────
+  getCategories(): Observable<{ success: boolean; categories: AdminCategory[] }> {
+    return this.http.get<any>(`${this.baseUrl}/categories`, { headers: this.getHeaders() });
+  }
+
+  createCategory(data: Partial<AdminCategory>): Observable<{ success: boolean; category: AdminCategory; message: string }> {
+    return this.http.post<any>(`${this.baseUrl}/categories`, data, { headers: this.getHeaders() });
+  }
+
+  updateCategory(id: number, data: Partial<AdminCategory>): Observable<{ success: boolean; category: AdminCategory; message: string }> {
+    return this.http.put<any>(`${this.baseUrl}/categories/${id}`, data, { headers: this.getHeaders() });
+  }
+
+  deleteCategory(id: number): Observable<{ success: boolean; message: string }> {
+    return this.http.delete<any>(`${this.baseUrl}/categories/${id}`, { headers: this.getHeaders() });
+  }
+
+  // ── Coupons ───────────────────────────────────────────────────────────────
+  getCoupons(): Observable<{ success: boolean; coupons: AdminCoupon[] }> {
+    return this.http.get<any>(`${this.baseUrl}/coupons`, { headers: this.getHeaders() });
+  }
+
+  createCoupon(data: Partial<AdminCoupon>): Observable<{ success: boolean; coupon: AdminCoupon; message: string }> {
+    return this.http.post<any>(`${this.baseUrl}/coupons`, data, { headers: this.getHeaders() });
+  }
+
+  updateCoupon(id: number, data: Partial<AdminCoupon>): Observable<{ success: boolean; coupon: AdminCoupon; message: string }> {
+    return this.http.put<any>(`${this.baseUrl}/coupons/${id}`, data, { headers: this.getHeaders() });
+  }
+
+  deleteCoupon(id: number): Observable<{ success: boolean; message: string }> {
+    return this.http.delete<any>(`${this.baseUrl}/coupons/${id}`, { headers: this.getHeaders() });
   }
 
   // ── Deployment & Integration Status ───────────────────────────────────────

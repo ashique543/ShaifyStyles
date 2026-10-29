@@ -5,6 +5,8 @@ import { AdminLoginComponent } from './admin/pages/login/admin-login.component';
 import { AdminDashboardComponent } from './admin/pages/dashboard/admin-dashboard.component';
 import { AdminProductsComponent } from './admin/pages/products/admin-products.component';
 import { AdminOrdersComponent } from './admin/pages/orders/admin-orders.component';
+import { AdminCategoriesComponent } from './admin/pages/categories/admin-categories.component';
+import { AdminCouponsComponent } from './admin/pages/coupons/admin-coupons.component';
 import { AdminDeploymentComponent } from './admin/pages/deployment/admin-deployment.component';
 import { authGuard } from './admin/guards/auth.guard';
 
@@ -35,6 +37,14 @@ export const routes: Routes = [
       {
         path: 'products',
         component: AdminProductsComponent
+      },
+      {
+        path: 'categories',
+        component: AdminCategoriesComponent
+      },
+      {
+        path: 'coupons',
+        component: AdminCouponsComponent
       },
       {
         path: 'orders',

@@ -29,20 +29,32 @@ A comprehensive, full-stack boutique e-commerce platform and dedicated Store Own
    - **Mobile OTP**: Fast 10-digit phone verification with SMS gateway integration (Fast2SMS / Twilio) or auto-generated simulation code (`123456`).
    - **Google Sign-In**: Instant one-click Google OAuth 2.0 authentication or quick demo profile testing.
    - **Persistent Shopper Session**: 30-day token storage and automatic checkout address pre-filling.
-   - **Customer "My Orders" History**: Real-time order status tracking with courier AWB codes directly from the user dropdown.
-2. **Interactive Catalog**: Filter by category chips, instant keyword search, and sorting (Featured, Price Low to High, Price High to Low, Newest).
+   - **Customer "My Orders" History & Live Stepper**: 5-stage visual progress timeline (`Placed` ➔ `Paid` ➔ `Packing` ➔ `In Transit` ➔ `Delivered`), direct Courier AWB live tracking button, and **1-Click "Download Invoice (PDF)"**.
+2. **Interactive Catalog & Dynamic Collections**: Filter by category chips fetched dynamically from the database (`GET /api/categories`), instant keyword search, and sorting.
 3. **Product Details Modal**: High-res imagery, fabric details, size/style selector, inventory availability, and pre-filled WhatsApp inquiry links.
-4. **Slide-in Cart Drawer**: Real-time quantity adjustment, free shipping threshold progress tracker, and delivery address form with auto-fill.
+4. **Slide-in Cart Drawer & Promo Coupons**:
+   - Real-time quantity adjustment, free shipping threshold progress tracker.
+   - **Coupon Discount Input**: Validates promo codes in real time with instant cart subtotal discount calculation (`POST /api/coupons/validate`).
+   - Delivery address form with auto-fill.
 5. **Razorpay Payment Gateway**: Seamless integration supporting UPI (Google Pay, PhonePe, Paytm), Credit/Debit cards, NetBanking, and a simulated fallback demo mode.
 6. **Order Confirmation & Tracking**: Receipt modal with unique Order IDs (`#SS-xxx`) and direct one-click WhatsApp order tracking.
 
 ### 🛡️ Store Owner Admin Panel (`/admin`)
 1. **JWT-Secured Authentication**: Protected routes via Angular `authGuard` and Flask-JWT-Extended backend authorization.
 2. **Live Sales Dashboard**: KPI metric cards for Total Revenue, Total Orders, Pending Dispatches, and Low Stock inventory alerts.
-3. **Product Management**: Full CRUD operations to create, edit, and delete products, toggle size options, update stock units, and upload product imagery directly.
-4. **Order Fulfillment & Logistics**: Filter orders by status, update fulfillment state (`created` ➔ `paid` ➔ `processing` ➔ `shipped` ➔ `delivered`), assign tracking carrier and AWB numbers, and add internal notes.
-5. **One-Click WhatsApp Dispatch**: Generates pre-formatted WhatsApp customer dispatch messages with tracking info and order details ready to send.
-6. **🚀 In-App Deployment & Health Center (`/admin/deployment`)**:
+3. **Product Management**: Full CRUD operations with dynamically populated category selectors from the database.
+4. **🏷️ Dynamic Category Management (`/admin/categories`)**:
+   - Create, edit, toggle visibility, and delete collections with custom emoji icons (`👗`, `🌹`, `🎁`, etc.), slug URLs, descriptions, and display sorting.
+   - Instant synchronization with customer storefront tabs without redeploying code.
+5. **🎟️ Promo Coupons Engine (`/admin/coupons`)**:
+   - Manage discount codes (Percentage `% OFF` or Flat `₹ OFF`), minimum order threshold, usage caps, and active/pause toggles.
+6. **🧾 Order Fulfillment & Professional PDF Bill Generator (`/admin/orders`)**:
+   - Filter orders by status, customer phone, or date range.
+   - Status transitions (`created` ➔ `paid` ➔ `processing` ➔ `shipped` ➔ `delivered`), assign courier partner & AWB consignment numbers.
+   - **1-Click "Download Bill (PDF)"**: Generates branded tax invoices via ReportLab with boutique logo, customer address, itemized line totals, coupons, and tracking barcode info.
+   - **1-Click "Print Bill"**: Print-ready warehouse slip formatting for thermal or A4 printing.
+7. **One-Click WhatsApp Dispatch**: Generates pre-formatted WhatsApp customer dispatch messages with tracking info and order details ready to send.
+8. **🚀 In-App Deployment & Health Center (`/admin/deployment`)**:
    - Live system status matrix (Database, Razorpay, Google OAuth, SMS OTP, Cloudinary, WSGI).
    - Copyable guides and commands for Render, Railway, Vercel, Netlify, and managed PostgreSQL (Neon / Supabase).
    - One-click copyable production environment variables generator.
@@ -74,29 +86,36 @@ ecommerce/
 ├── backend/                              # Python Flask REST API
 │   ├── app/
 │   │   ├── controllers/                  # Controller layer: Blueprints & API endpoints
-│   │   │   ├── admin_controller.py
-│   │   │   ├── auth_controller.py
-│   │   │   ├── order_controller.py
-│   │   │   └── product_controller.py
+│   │   │   ├── admin_controller.py       # Admin auth, dashboard metrics, orders, PDF bills
+│   │   │   ├── auth_controller.py        # Customer Google & phone OTP authentication
+│   │   │   ├── category_controller.py    # Public & admin category endpoints
+│   │   │   ├── coupon_controller.py      # Promo code validation & admin CRUD
+│   │   │   ├── order_controller.py       # Checkout intent, Razorpay verify, customer invoice
+│   │   │   └── product_controller.py     # Product catalog query & filter
 │   │   ├── services/                     # Service layer: Business & checkout domain logic
-│   │   │   ├── admin_service.py
-│   │   │   ├── auth_service.py
-│   │   │   ├── order_service.py
-│   │   │   └── product_service.py
+│   │   │   ├── admin_service.py          # Dashboard analytics & system diagnostics
+│   │   │   ├── auth_service.py           # OTP dispatch & JWT issuance
+│   │   │   ├── category_service.py       # Taxonomy business rules
+│   │   │   ├── coupon_service.py         # Discount validation & usage counting
+│   │   │   ├── order_service.py          # Checkout verification & inventory reservation
+│   │   │   ├── pdf_service.py            # ReportLab branded invoice PDF generator
+│   │   │   └── product_service.py        # Catalog search & filtering
 │   │   ├── repositories/                 # Repository layer: All SQLAlchemy database operations
-│   │   │   ├── base_repository.py
-│   │   │   ├── admin_repository.py
-│   │   │   ├── order_repository.py
-│   │   │   ├── otp_repository.py
-│   │   │   ├── product_repository.py
-│   │   │   └── user_repository.py
-│   │   ├── __init__.py                   # App factory, JWT setup, CORS, auto-seed
+│   │   │   ├── base_repository.py        # Generic BaseRepository with CRUD helpers
+│   │   │   ├── admin_repository.py       # Admin credentials queries
+│   │   │   ├── category_repository.py    # Category taxonomy queries & auto-seeding
+│   │   │   ├── coupon_repository.py      # Promo code lookups & usage increments
+│   │   │   ├── order_repository.py       # Orders & order items multi-record transactions
+│   │   │   ├── otp_repository.py         # Phone OTP expiry management
+│   │   │   ├── product_repository.py     # Product catalog queries & stock decrementing
+│   │   │   └── user_repository.py        # Customer profile records
+│   │   ├── __init__.py                   # App factory, blueprints, migrations, auto-seed
 │   │   ├── config.py                     # PostgreSQL/SQLite configuration & JWT secret
-│   │   ├── models.py                     # SQLAlchemy models: Product, Order, OrderItem, Admin
-│   │   └── seed.py                       # Initial 10-product catalog seed data
+│   │   ├── models.py                     # SQLAlchemy models: Product, Order, Category, Coupon, Admin
+│   │   └── seed.py                       # Initial product catalog seed data
 │   ├── uploads/                          # Local image upload storage
 │   ├── .env.example                      # Sample backend environment variables
-│   ├── requirements.txt                  # Python dependencies
+│   ├── requirements.txt                  # Python dependencies (ReportLab, Flask-SQLAlchemy, etc.)
 │   └── app.py                            # Flask server runner (python app.py)
 │
 ├── frontend/                             # Angular Standalone Web App
@@ -107,7 +126,7 @@ ecommerce/
 │   │   │   ├── admin/                    # Dedicated Store Owner Admin Module
 │   │   │   │   ├── components/
 │   │   │   │   │   ├── admin-layout.component.ts/.html     # Admin layout shell
-│   │   │   │   │   ├── admin-sidebar.component.ts/.html    # Collapsible sidebar
+│   │   │   │   │   ├── admin-sidebar.component.ts/.html    # Collapsible navigation
 │   │   │   │   │   └── admin-toasts.component.ts/.html     # Alert notifications
 │   │   │   │   ├── guards/
 │   │   │   │   │   └── auth.guard.ts                       # Angular route protection
@@ -117,22 +136,27 @@ ecommerce/
 │   │   │   │   │   ├── login/admin-login.component.ts/.html
 │   │   │   │   │   ├── dashboard/admin-dashboard.component.ts/.html
 │   │   │   │   │   ├── products/admin-products.component.ts/.html
-│   │   │   │   │   └── orders/admin-orders.component.ts/.html
+│   │   │   │   │   ├── categories/admin-categories.component.ts/.html  # Dynamic Category Hub
+│   │   │   │   │   ├── coupons/admin-coupons.component.ts/.html        # Promo Coupons Manager
+│   │   │   │   │   ├── orders/admin-orders.component.ts/.html          # PDF Bills & Fulfillment
+│   │   │   │   │   └── deployment/admin-deployment.component.ts/.html  # Health & Deployment
 │   │   │   │   └── services/
-│   │   │   │       ├── admin-api.service.ts                # Admin REST client with JWT
+│   │   │   │       ├── admin-api.service.ts                # Admin REST client with JWT & PDF download
 │   │   │   │       └── admin-auth.service.ts               # Session storage & auth state
 │   │   │   ├── components/               # Customer Storefront Components
 │   │   │   │   ├── navbar/               # Announcement bar & header (.ts / .html)
 │   │   │   │   ├── hero/                 # Hero section & value props (.ts / .html)
 │   │   │   │   ├── product-card/         # Product card with badges (.ts / .html)
 │   │   │   │   ├── product-details-modal/# Size selector & WhatsApp inquiry (.ts / .html)
-│   │   │   │   ├── cart-drawer/          # Shopping bag & checkout (.ts / .html)
+│   │   │   │   ├── cart-drawer/          # Shopping bag, coupon box & checkout (.ts / .html)
+│   │   │   │   ├── orders-modal/         # 5-stage live status stepper & invoice PDF (.ts / .html)
+│   │   │   │   ├── auth-modal/           # Google & OTP customer login (.ts / .html)
 │   │   │   │   ├── order-confirmation-modal/ # Order receipt (.ts / .html)
 │   │   │   │   └── footer/               # Boutique policies & admin link (.ts / .html)
 │   │   │   ├── pages/
 │   │   │   │   └── storefront/           # Customer storefront page (.ts / .html)
 │   │   │   ├── models/                   # Product & Order customer models
-│   │   │   ├── services/                 # ApiService & CartService
+│   │   │   ├── services/                 # ApiService, CartService & CustomerAuthService
 │   │   │   ├── app.routes.ts             # Storefront and Admin route definitions
 │   │   │   ├── app.ts                    # Root component with router-outlet
 │   │   │   └── app.html                  # Root template

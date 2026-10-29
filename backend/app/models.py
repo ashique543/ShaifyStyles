@@ -7,6 +7,7 @@ db = SQLAlchemy()
 bcrypt = Bcrypt()
 
 
+
 class Product(db.Model):
     __tablename__ = 'products'
     
@@ -120,6 +121,8 @@ class Order(db.Model):
     notes = db.Column(db.Text, nullable=True)
     tracking_carrier = db.Column(db.String(100), nullable=True)
     tracking_number = db.Column(db.String(200), nullable=True)
+    coupon_code = db.Column(db.String(50), nullable=True)
+    discount_amount = db.Column(db.Float, default=0.0, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -142,6 +145,8 @@ class Order(db.Model):
             'notes': self.notes,
             'tracking_carrier': self.tracking_carrier,
             'tracking_number': self.tracking_number,
+            'coupon_code': self.coupon_code,
+            'discount_amount': self.discount_amount or 0.0,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
             'items': [item.to_dict() for item in self.items]
@@ -206,5 +211,63 @@ class Admin(db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
+
+class Category(db.Model):
+    """Dynamic product categories managed from the admin panel."""
+    __tablename__ = 'categories'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    slug = db.Column(db.String(100), unique=True, nullable=False, index=True)
+    description = db.Column(db.Text, nullable=True)
+    icon = db.Column(db.String(10), nullable=True)   # emoji icon e.g. 🌹
+    sort_order = db.Column(db.Integer, default=0, nullable=False)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'slug': self.slug,
+            'description': self.description,
+            'icon': self.icon,
+            'sort_order': self.sort_order,
+            'is_active': self.is_active,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
+
+class Coupon(db.Model):
+    """Discount coupons and promo codes for the boutique store."""
+    __tablename__ = 'coupons'
+
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    description = db.Column(db.String(255), nullable=True)
+    discount_type = db.Column(db.String(20), nullable=False, default='percentage')  # 'percentage' | 'flat'
+    discount_value = db.Column(db.Float, nullable=False)  # e.g. 10 (10%) or 100 (₹100 off)
+    min_order_amount = db.Column(db.Float, default=0.0, nullable=True)
+    max_uses = db.Column(db.Integer, nullable=True)       # None = unlimited
+    used_count = db.Column(db.Integer, default=0, nullable=False)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'code': self.code,
+            'description': self.description,
+            'discount_type': self.discount_type,
+            'discount_value': self.discount_value,
+            'min_order_amount': self.min_order_amount or 0.0,
+            'max_uses': self.max_uses,
+            'used_count': self.used_count,
+            'is_active': self.is_active,
+            'expires_at': self.expires_at.isoformat() if self.expires_at else None,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }

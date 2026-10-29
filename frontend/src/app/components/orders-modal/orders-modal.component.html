@@ -36,6 +36,7 @@
       <!-- Orders List -->
       <div *ngIf="!isLoading && orders.length > 0" class="customer-orders-list">
         <div *ngFor="let order of orders" class="customer-order-card">
+          <!-- Top Row: Order ID and Status Pill -->
           <div class="order-top-row">
             <div>
               <span class="order-id-badge">Order #SS-{{ order.id }}</span>
@@ -46,6 +47,23 @@
             </span>
           </div>
 
+          <!-- 5-Stage Live Order Status Stepper -->
+          <div class="order-stepper-wrap" *ngIf="order.status !== 'cancelled' && order.status !== 'failed'">
+            <div class="stepper-track">
+              <div 
+                *ngFor="let step of timelineSteps; let idx = index" 
+                class="stepper-step" 
+                [class.step-completed]="isStepCompleted(order.status, idx)" 
+                [class.step-active]="isCurrentStep(order.status, idx)">
+                <div class="step-icon-wrap">
+                  <span class="step-emoji">{{ step.icon }}</span>
+                </div>
+                <span class="step-label">{{ step.label }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Items Summary -->
           <div class="order-items-summary">
             <div *ngFor="let item of order.items" class="order-item-row">
               <span class="order-item-title">{{ item.product_title }}</span>
@@ -55,6 +73,13 @@
             </div>
           </div>
 
+          <!-- Discount Info if applied -->
+          <div *ngIf="order.discount_amount && order.discount_amount > 0" style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #db2777; margin-bottom: 0.5rem; padding: 0.2rem 0;">
+            <span>Coupon Discount ({{ order.coupon_code || 'PROMO' }})</span>
+            <span>-₹{{ order.discount_amount | number }}</span>
+          </div>
+
+          <!-- Address and Total Row -->
           <div class="order-bottom-row">
             <div class="order-address-snippet">
               <span class="snippet-label">Delivering to:</span>
@@ -66,10 +91,25 @@
             </div>
           </div>
 
-          <!-- Tracking Carrier Banner if shipped -->
+          <!-- Tracking Banner if shipped -->
           <div *ngIf="order.tracking_number" class="order-tracking-banner">
             <span>🚚 Shipped via <strong>{{ order.tracking_carrier || 'Courier' }}</strong></span>
-            <span class="tracking-code">Awb: {{ order.tracking_number }}</span>
+            <span class="tracking-code">AWB: {{ order.tracking_number }}</span>
+          </div>
+
+          <!-- Order Actions: Download Bill & Live Tracking -->
+          <div class="order-card-actions">
+            <button type="button" class="btn-order-invoice" (click)="downloadInvoice(order.id)">
+              <span>📄</span> Download Invoice (PDF)
+            </button>
+            <a 
+              *ngIf="order.tracking_number" 
+              [href]="getTrackingUrl(order.tracking_carrier, order.tracking_number)" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="btn-order-track">
+              <span>🚚</span> Track Shipment
+            </a>
           </div>
         </div>
       </div>

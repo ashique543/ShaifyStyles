@@ -35,6 +35,48 @@ export class CartDrawerComponent {
   shippingPincode = '';
   orderNotes = '';
 
+  // Coupon State
+  couponCode = '';
+  appliedCoupon = signal<any | null>(null);
+  couponDiscount = signal<number>(0);
+  couponError = signal<string | null>(null);
+  isApplyingCoupon = signal<boolean>(false);
+
+  applyCoupon(): void {
+    const code = this.couponCode.trim();
+    if (!code) return;
+    this.isApplyingCoupon.set(true);
+    this.couponError.set(null);
+
+    this.apiService.validateCoupon(code, this.cartService.subtotal()).subscribe({
+      next: (res) => {
+        this.isApplyingCoupon.set(false);
+        if (res.success && res.coupon) {
+          this.appliedCoupon.set(res.coupon);
+          this.couponDiscount.set(res.discount_amount || 0);
+          this.couponError.set(null);
+        } else {
+          this.appliedCoupon.set(null);
+          this.couponDiscount.set(0);
+          this.couponError.set(res.message || 'Invalid coupon code');
+        }
+      },
+      error: (err) => {
+        this.isApplyingCoupon.set(false);
+        this.appliedCoupon.set(null);
+        this.couponDiscount.set(0);
+        this.couponError.set(err.error?.message || 'Could not validate coupon');
+      }
+    });
+  }
+
+  removeCoupon(): void {
+    this.couponCode = '';
+    this.appliedCoupon.set(null);
+    this.couponDiscount.set(0);
+    this.couponError.set(null);
+  }
+
   getProgressPercentage(): number {
     const sub = this.cartService.subtotal();
     const thresh = this.cartService.freeShippingThreshold;
@@ -44,7 +86,8 @@ export class CartDrawerComponent {
   finalTotal(): number {
     const sub = this.cartService.subtotal();
     const shipping = this.cartService.isFreeShippingEligible() ? 0 : 150;
-    return sub + shipping;
+    const discount = this.couponDiscount();
+    return Math.max(0, sub + shipping - discount);
   }
 
   proceedToShipping(): void {
@@ -101,7 +144,8 @@ export class CartDrawerComponent {
       customer_email: this.customerEmail.trim(),
       customer_phone: this.customerPhone.trim(),
       shipping_address: `${this.shippingStreet.trim()}, ${this.shippingCity.trim()}, ${this.shippingState.trim()} - ${this.shippingPincode.trim()}`,
-      notes: this.orderNotes.trim()
+      notes: this.orderNotes.trim(),
+      coupon_code: this.appliedCoupon()?.code
     };
 
     // 1. Call Backend API to create order

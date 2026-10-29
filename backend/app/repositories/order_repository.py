@@ -32,7 +32,9 @@ class OrderRepository(BaseRepository[Order]):
             shipping_address=order_fields['shipping_address'],
             total_amount=round(order_fields['total_amount'], 2),
             status=order_fields.get('status', 'created'),
-            notes=order_fields.get('notes')
+            notes=order_fields.get('notes'),
+            coupon_code=order_fields.get('coupon_code'),
+            discount_amount=float(order_fields.get('discount_amount', 0.0) or 0.0)
         )
         self.add(new_order)
         self.flush()  # Populates new_order.id

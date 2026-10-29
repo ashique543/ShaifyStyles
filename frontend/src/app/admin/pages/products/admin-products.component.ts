@@ -27,7 +27,7 @@ export class AdminProductsComponent implements OnInit {
   isSaving = signal(false);
   uploadingImg = signal(false);
 
-  categories = CATEGORIES;
+  categories: string[] = CATEGORIES;
   sizeOptions = SIZE_OPTIONS;
 
   searchQuery = '';
@@ -44,7 +44,18 @@ export class AdminProductsComponent implements OnInit {
   form: Partial<AdminProduct> = this.resetForm();
 
   ngOnInit(): void {
+    this.loadCategories();
     this.loadProducts();
+  }
+
+  loadCategories(): void {
+    this.api.getCategories().subscribe({
+      next: (res) => {
+        if (res.success && res.categories?.length) {
+          this.categories = res.categories.map(c => c.name);
+        }
+      }
+    });
   }
 
   resetForm(): Partial<AdminProduct> {

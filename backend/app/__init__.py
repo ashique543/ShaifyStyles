@@ -7,8 +7,31 @@ from datetime import timedelta
 from .config import Config
 from .models import db, bcrypt
 from .repositories import AdminRepository
-from .controllers import products_bp, orders_bp, admin_bp, auth_bp
+from .controllers import products_bp, orders_bp, admin_bp, auth_bp, category_bp, coupon_bp
+
 from .seed import seed_database
+from sqlalchemy import inspect, text
+
+def _safe_migrations(db):
+    """Safely adds new columns to SQLite tables if they do not yet exist."""
+    try:
+        insp = inspect(db.engine)
+        if 'orders' in insp.get_table_names():
+            existing_cols = {c['name'] for c in insp.get_columns('orders')}
+            with db.engine.connect() as conn:
+                if 'notes' not in existing_cols:
+                    conn.execute(text("ALTER TABLE orders ADD COLUMN notes TEXT"))
+                if 'tracking_carrier' not in existing_cols:
+                    conn.execute(text("ALTER TABLE orders ADD COLUMN tracking_carrier VARCHAR(100)"))
+                if 'tracking_number' not in existing_cols:
+                    conn.execute(text("ALTER TABLE orders ADD COLUMN tracking_number VARCHAR(200)"))
+                if 'coupon_code' not in existing_cols:
+                    conn.execute(text("ALTER TABLE orders ADD COLUMN coupon_code VARCHAR(50)"))
+                if 'discount_amount' not in existing_cols:
+                    conn.execute(text("ALTER TABLE orders ADD COLUMN discount_amount FLOAT DEFAULT 0.0"))
+                conn.commit()
+    except Exception as e:
+        pass
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -31,6 +54,9 @@ def create_app(config_class=Config):
     app.register_blueprint(orders_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(category_bp)
+    app.register_blueprint(coupon_bp)
+
 
     # ── Health Check ─────────────────────────────────────────────────────────
     @app.route('/api/health', methods=['GET'])
@@ -79,17 +105,20 @@ def create_app(config_class=Config):
     with app.app_context():
         db.create_all()
         # Safe migration check for local SQLite when upgrading existing DBs
-        try:
-            with db.engine.connect() as conn:
-                conn.execute(db.text("ALTER TABLE orders ADD COLUMN user_id INTEGER REFERENCES users(id)"))
-                conn.commit()
-        except Exception:
-            pass
+        _safe_migrations(db)
 
         try:
             seed_database()
         except Exception as e:
             app.logger.warning(f"Seed note: {e}")
+
+        # Seed default categories if the table is empty
+        try:
+            from .repositories.category_repository import CategoryRepository
+            CategoryRepository().seed_defaults()
+        except Exception as e:
+            app.logger.warning(f"Category seed note: {e}")
+
 
     return app
 

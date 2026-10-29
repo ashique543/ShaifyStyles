@@ -47,7 +47,7 @@ export class StorefrontComponent implements OnInit {
   selectedProduct = signal<Product | null>(null);
   confirmedOrder = signal<OrderDetail | null>(null);
 
-  categories = [
+  categories: { id: string; label: string; icon: string }[] = [
     { id: 'All', label: 'All Collections', icon: '✨' },
     { id: 'Suits & Kurtis', label: 'Suits & Kurtis', icon: '👗' },
     { id: 'Hijab Bouquets', label: 'Hijab Bouquets', icon: '🌹' },
@@ -55,7 +55,27 @@ export class StorefrontComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.fetchCategories();
     this.fetchProducts();
+  }
+
+  fetchCategories(): void {
+    this.apiService.getCategories().subscribe({
+      next: (res) => {
+        if (res.success && res.categories?.length) {
+          const dynamicList = res.categories.map(c => ({
+            id: c.name,
+            label: c.name,
+            icon: c.icon || '✨'
+          }));
+          this.categories = [
+            { id: 'All', label: 'All Collections', icon: '✨' },
+            ...dynamicList
+          ];
+        }
+      },
+      error: (err) => console.warn('Could not load categories dynamically, using defaults', err)
+    });
   }
 
   fetchProducts(): void {

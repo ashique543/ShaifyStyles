@@ -57,6 +57,24 @@ export class ApiService {
     return this.http.get<{ success: boolean; order: OrderDetail }>(`${this.baseUrl}/orders/${id}`);
   }
 
+  getCategories(): Observable<{ success: boolean; categories: { id: number; name: string; slug: string; icon?: string; description?: string }[] }> {
+    return this.http.get<any>(`${this.baseUrl}/categories`);
+  }
+
+  validateCoupon(code: string, orderAmount: number): Observable<{ success: boolean; coupon?: any; discount_amount?: number; message?: string }> {
+    return this.http.post<any>(`${this.baseUrl}/coupons/validate`, { code, order_amount: orderAmount });
+  }
+
+  downloadInvoice(orderId: number): void {
+    const url = `${this.baseUrl}/orders/${orderId}/invoice`;
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `invoice-SS-${orderId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
   getHealth(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/health`);
   }

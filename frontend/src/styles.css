@@ -3208,6 +3208,127 @@ tbody tr:last-child td { border-bottom: none; }
   justify-content: space-between;
 }
 
+/* Order Stepper Progress Bar */
+.order-stepper-wrap {
+  margin: 0.85rem 0;
+  padding: 0.75rem 0.5rem;
+  background: #ffffff;
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  border-radius: 10px;
+}
+.stepper-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+.stepper-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: #e5e7eb;
+  z-index: -1;
+}
+.stepper-step.step-completed:not(:last-child)::after {
+  background: #9333ea;
+}
+.step-icon-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  border: 2px solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+.stepper-step.step-completed .step-icon-wrap {
+  background: #f3e8ff;
+  border-color: #9333ea;
+}
+.stepper-step.step-active .step-icon-wrap {
+  background: #9333ea;
+  border-color: #7e22ce;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
+}
+.step-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-top: 0.35rem;
+  text-align: center;
+}
+.stepper-step.step-completed .step-label {
+  color: #7e22ce;
+}
+.stepper-step.step-active .step-label {
+  color: #9333ea;
+  font-weight: 700;
+}
+
+/* Order Action Buttons */
+.order-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed rgba(0, 0, 0, 0.08);
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.btn-order-invoice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  background: #f3e8ff;
+  color: #7e22ce;
+  border: 1px solid #d8b4fe;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-order-invoice:hover {
+  background: #7e22ce;
+  color: #ffffff;
+}
+.btn-order-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-order-track:hover {
+  background: #059669;
+  color: #ffffff;
+}
+
+
 /* ==========================================================================
    ADMIN DEPLOYMENT & INTEGRATIONS PAGE
    ========================================================================== */

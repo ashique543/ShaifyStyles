@@ -72,3 +72,30 @@ export interface PaginatedResponse<T> {
   current_page: number;
   items?: T[];
 }
+
+export interface AdminCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  sort_order: number;
+  is_active: boolean;
+  product_count?: number;
+  created_at?: string;
+}
+
+export interface AdminCoupon {
+  id: number;
+  code: string;
+  description?: string;
+  discount_type: 'percentage' | 'flat';
+  discount_value: number;
+  min_order_amount?: number;
+  max_uses?: number | null;
+  used_count: number;
+  is_active: boolean;
+  expires_at?: string | null;
+  created_at?: string;
+}
+

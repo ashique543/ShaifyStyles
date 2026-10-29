@@ -1,0 +1,240 @@
+<app-admin-toasts #toasts></app-admin-toasts>
+
+<div class="admin-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Discount Coupons & Offers</h1>
+      <p class="page-subtitle">Create promotional codes and discount rules — {{ coupons().length }} active/inactive coupons</p>
+    </div>
+    <button class="btn-add" (click)="openCreateModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Add Coupon
+    </button>
+  </div>
+
+  <!-- Table -->
+  @if (isLoading()) {
+    <div class="table-skeleton">
+      @for (_ of [1,2,3,4]; track $index) {
+        <div class="row-skeleton"></div>
+      }
+    </div>
+  } @else {
+    <div class="table-card">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Coupon Code</th>
+              <th>Discount Type</th>
+              <th>Value</th>
+              <th>Min Order</th>
+              <th>Uses</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cpn of coupons(); track cpn.id) {
+              <tr>
+                <td>
+                  <strong style="background: #fdf2f8; color: #db2777; border: 1px dashed #f472b6; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 14px;">
+                    {{ cpn.code }}
+                  </strong>
+                  @if (cpn.description) {
+                    <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">{{ cpn.description }}</div>
+                  }
+                </td>
+                <td>
+                  <span style="text-transform: capitalize; font-size: 13px;">{{ cpn.discount_type }}</span>
+                </td>
+                <td>
+                  <strong style="color: #059669; font-size: 14px;">
+                    {{ cpn.discount_type === 'percentage' ? (cpn.discount_value + '% OFF') : ('₹' + cpn.discount_value + ' OFF') }}
+                  </strong>
+                </td>
+                <td>
+                  <span style="font-size: 13px;">₹{{ cpn.min_order_amount | number:'1.0-0' }}</span>
+                </td>
+                <td>
+                  <span style="font-size: 13px;">{{ cpn.used_count }} {{ cpn.max_uses ? ('/ ' + cpn.max_uses) : '(unlimited)' }}</span>
+                </td>
+                <td>
+                  <button 
+                    type="button" 
+                    (click)="toggleActive(cpn)"
+                    [style.background]="cpn.is_active ? '#dcfce7' : '#f3f4f6'"
+                    [style.color]="cpn.is_active ? '#15803d' : '#6b7280'"
+                    style="border: none; padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    {{ cpn.is_active ? 'Active' : 'Paused' }}
+                  </button>
+                </td>
+                <td>
+                  <div style="display: flex; gap: 8px;">
+                    <button class="btn-edit" (click)="openEditModal(cpn)" title="Edit Coupon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </button>
+                    <button class="btn-delete" (click)="confirmDelete(cpn)" title="Delete Coupon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 32px; color: #6b7280;">
+                  No promo coupons configured. Click "Add Coupon" to launch your first promotional discount!
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Add/Edit Coupon Modal -->
+@if (isModalOpen()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-card" style="max-width: 480px;" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">{{ editingCoupon() ? 'Edit Coupon' : 'Create New Coupon' }}</h2>
+        <button class="btn-close" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        @if (formError()) {
+          <div style="background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 13px;">
+            {{ formError() }}
+          </div>
+        }
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">
+              Coupon Code *
+            </label>
+            <input
+              type="text"
+              class="form-input"
+              [(ngModel)]="form.code"
+              (input)="onCodeInput()"
+              placeholder="e.g. SHAIFY10, FESTIVE300"
+              style="width: 100%; text-transform: uppercase; font-family: monospace; font-weight: 700; font-size: 15px;"
+            />
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">
+              Description (shown to customer)
+            </label>
+            <input
+              type="text"
+              class="form-input"
+              [(ngModel)]="form.description"
+              placeholder="e.g. 10% off your entire boutique cart"
+              style="width: 100%;"
+            />
+          </div>
+
+          <div style="display: flex; gap: 12px;">
+            <div style="flex: 1;">
+              <label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">
+                Discount Type
+              </label>
+              <select class="form-input" [(ngModel)]="form.discount_type" style="width: 100%;">
+                <option value="percentage">Percentage (% OFF)</option>
+                <option value="flat">Flat Amount (₹ OFF)</option>
+              </select>
+            </div>
+            <div style="flex: 1;">
+              <label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">
+                Discount Value *
+              </label>
+              <input
+                type="number"
+                class="form-input"
+                [(ngModel)]="form.discount_value"
+                placeholder="10"
+                style="width: 100%;"
+              />
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 12px;">
+            <div style="flex: 1;">
+              <label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">
+                Minimum Order Amount (₹)
+              </label>
+              <input
+                type="number"
+                class="form-input"
+                [(ngModel)]="form.min_order_amount"
+                placeholder="0"
+                style="width: 100%;"
+              />
+            </div>
+            <div style="flex: 1;">
+              <label style="display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px;">
+                Max Uses (Blank = Unlimited)
+              </label>
+              <input
+                type="number"
+                class="form-input"
+                [(ngModel)]="form.max_uses"
+                placeholder="Unlimited"
+                style="width: 100%;"
+              />
+            </div>
+          </div>
+
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" [(ngModel)]="form.is_active" style="width: 16px; height: 16px; accent-color: #9333ea;" />
+            <span style="font-size: 13px; font-weight: 600; color: #374151;">Enable coupon for shoppers</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; padding: 16px 20px; border-top: 1px solid #f3f4f6;">
+        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button class="btn-save" (click)="saveCoupon()" [disabled]="isSaving()">
+          {{ isSaving() ? 'Saving...' : (editingCoupon() ? 'Save Changes' : 'Create Coupon') }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Delete Confirmation Modal -->
+@if (deletingCoupon()) {
+  <div class="modal-backdrop" (click)="cancelDelete()">
+    <div class="modal-card" style="max-width: 440px;" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title" style="color: #dc2626;">Confirm Deletion</h2>
+        <button class="btn-close" (click)="cancelDelete()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 14px; color: #4b5563; line-height: 1.5;">
+          Are you sure you want to delete coupon <strong>"{{ deletingCoupon()!.code }}"</strong>?
+        </p>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; padding: 16px 20px; border-top: 1px solid #f3f4f6;">
+        <button class="btn-cancel" (click)="cancelDelete()">Cancel</button>
+        <button class="btn-delete-confirm" (click)="executeDelete()" style="background: #dc2626; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+}
