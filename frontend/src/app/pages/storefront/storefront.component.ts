@@ -63,7 +63,7 @@ export class StorefrontComponent implements OnInit {
     this.apiService.getCategories().subscribe({
       next: (res) => {
         if (res.success && res.categories?.length) {
-          const dynamicList = res.categories.map(c => ({
+          const dynamicList = res.categories.filter(c => c.name.toLowerCase() != 'all').map(c => ({
             id: c.name,
             label: c.name,
             icon: c.icon || '✨'

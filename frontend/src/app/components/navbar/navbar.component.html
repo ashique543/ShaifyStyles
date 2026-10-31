@@ -40,9 +40,14 @@
   <div class="container header-container">
     <!-- Brand Logo -->
     <a href="#" class="brand-logo" (click)="onSelectCategory('All'); $event.preventDefault()">
-      <div class="brand-mark">SS</div>
+      <div class="brand-logo-frame">
+        <img src="assets/images/logo.png" alt="Shaify Styles Logo" class="brand-logo-img" />
+      </div>
       <div class="brand-text">
-        <span class="brand-title">Shaify Styles</span>
+        <div class="brand-title-wrap">
+          <span class="brand-title">Shaify Styles</span>
+          <span class="brand-arabic-badge">شيفي ستاليز</span>
+        </div>
         <span class="brand-tagline">Modest Fashion & Curated Hampers</span>
       </div>
     </a>

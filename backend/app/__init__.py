@@ -119,6 +119,32 @@ def create_app(config_class=Config):
         except Exception as e:
             app.logger.warning(f"Category seed note: {e}")
 
+        # Seed default admin if none exists
+        try:
+            admin_repo = AdminRepository()
+            if not admin_repo.get_by_username('admin'):
+                admin_repo.create('admin', 'admin@shaifystyles.com', 'admin123')
+                app.logger.info("Default admin created: admin / admin123")
+        except Exception as e:
+            app.logger.warning(f"Admin seed note: {e}")
+
+        # Seed sample promo coupon if none exists
+        try:
+            from .repositories.coupon_repository import CouponRepository
+            coupon_repo = CouponRepository()
+            if not coupon_repo.get_by_code('WELCOME10'):
+                coupon_repo.create({
+                    'code': 'WELCOME10',
+                    'description': '10% off on boutique orders above Rs. 999',
+                    'discount_type': 'percentage',
+                    'discount_value': 10,
+                    'min_order_amount': 999,
+                    'is_active': True
+                })
+        except Exception as e:
+            app.logger.warning(f"Coupon seed note: {e}")
+
+
 
     return app
 

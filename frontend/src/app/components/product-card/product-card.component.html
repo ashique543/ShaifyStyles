@@ -11,6 +11,12 @@
 
     <!-- Badges Overlay -->
     <div class="card-badges">
+      @if (product().category === 'Hijab Bouquets') {
+        <div class="bouquet-seal-badge" title="Authentic Shaify Styles Handcrafted Bouquet">
+          <img src="assets/images/shaify_logo_animated.gif" alt="Shaify Styles Bouquet" class="card-animated-logo-gif" />
+          <span>Handmade Bouquet</span>
+        </div>
+      }
       @if (product().badge) {
         <span class="badge badge-rose">{{ product().badge }}</span>
       }

@@ -2,7 +2,8 @@ import io
 from datetime import datetime
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
+import os
+from reportlab.platypus import SimpleDocTemplate, Image as RLImage, Paragraph, Spacer, Table, TableStyle, HRFlowable
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 class PDFInvoiceService:
@@ -29,7 +30,7 @@ class PDFInvoiceService:
             parent=styles['Heading1'],
             fontSize=22,
             leading=26,
-            textColor=colors.HexColor('#7e22ce'),
+            textColor=colors.HexColor('#121214'),
             fontName='Helvetica-Bold',
             spaceAfter=2
         )
@@ -45,7 +46,7 @@ class PDFInvoiceService:
             parent=styles['Heading2'],
             fontSize=16,
             leading=20,
-            textColor=colors.HexColor('#4c1d95'),
+            textColor=colors.HexColor('#9E7A32'),
             fontName='Helvetica-Bold',
             alignment=2
         )
@@ -63,7 +64,7 @@ class PDFInvoiceService:
             fontSize=9,
             leading=12,
             fontName='Helvetica-Bold',
-            textColor=colors.HexColor('#6b21a8')
+            textColor=colors.HexColor('#C5A059')
         )
         body_p = ParagraphStyle(
             'BodyP',
@@ -92,13 +93,34 @@ class PDFInvoiceService:
 
         status_text = (order.get('status') or 'CONFIRMED').upper()
 
+        logo_path = os.path.join(os.path.dirname(__file__), '..', '..', 'uploads', 'logo.png')
+        if os.path.exists(logo_path):
+            logo_img = RLImage(logo_path, width=44, height=44)
+            left_cell = Table([
+                [logo_img, Paragraph('<b>SHAIFY STYLES</b><br/><font size="8" color="#9E7A32">شيفي ستاليز</font>', brand_title)],
+                ['', Paragraph('Handcrafted Luxury & Modest Wear · @shaifystyles_', brand_sub)]
+            ], colWidths=[52, 270])
+            left_cell.setStyle(TableStyle([
+                ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                ('SPAN', (0, 0), (0, 1)),
+                ('LEFTPADDING', (0,0), (-1,-1), 0),
+                ('RIGHTPADDING', (0,0), (-1,-1), 0),
+                ('TOPPADDING', (0,0), (-1,-1), 0),
+                ('BOTTOMPADDING', (0,0), (-1,-1), 0),
+            ]))
+        else:
+            left_cell = Table([
+                [Paragraph('<b>SHAIFY STYLES</b>', brand_title)],
+                [Paragraph('Handcrafted Luxury & Modest Wear · @shaifystyles_', brand_sub)]
+            ], colWidths=[320])
+
         header_table = Table([
             [
-                Paragraph('<b>SHAIFY STYLES</b>', brand_title),
+                left_cell,
                 Paragraph(f'<b>TAX INVOICE</b><br/>#SS-{order.get("id", "")}', inv_title)
             ],
             [
-                Paragraph('Handcrafted Luxury & Modest Wear · @shaifystyles_', brand_sub),
+                '',
                 Paragraph(f'Date: {created_str}<br/>Status: <b>{status_text}</b>', inv_meta)
             ]
         ], colWidths=[320, 220])
@@ -111,7 +133,7 @@ class PDFInvoiceService:
         ]))
         story.append(header_table)
         story.append(Spacer(1, 10))
-        story.append(HRFlowable(width='100%', thickness=2, color=colors.HexColor('#9333ea'), spaceAfter=14))
+        story.append(HRFlowable(width='100%', thickness=2, color=colors.HexColor('#C5A059'), spaceAfter=14))
 
         # ── Billing & Shipping Info ───────────────────────────────────────────
         cust_name = order.get('customer_name', 'Valued Customer')
@@ -133,7 +155,7 @@ class PDFInvoiceService:
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
             ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#faf5ff')),
             ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#e9d5ff')),
-            ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#f3e8ff')),
+            ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#FAF4E8')),
             ('TOPPADDING', (0, 0), (-1, -1), 8),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
             ('LEFTPADDING', (0, 0), (-1, -1), 10),
@@ -197,7 +219,7 @@ class PDFInvoiceService:
             parent=body_p,
             fontSize=11,
             leading=14,
-            textColor=colors.HexColor('#7e22ce'),
+            textColor=colors.HexColor('#121214'),
             fontName='Helvetica-Bold'
         )
         table_rows.append([
@@ -208,7 +230,7 @@ class PDFInvoiceService:
 
         items_table = Table(table_rows, colWidths=[24, 216, 70, 40, 95, 95])
         items_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f3e8ff')),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#FAF4E8')),
             ('ALIGN', (0, 0), (0, -1), 'CENTER'),
             ('ALIGN', (2, 0), (3, -1), 'CENTER'),
             ('ALIGN', (4, 0), (-1, -1), 'RIGHT'),
@@ -218,8 +240,8 @@ class PDFInvoiceService:
             ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
             ('LEFTPADDING', (0, 0), (-1, -1), 6),
             ('RIGHTPADDING', (0, 0), (-1, -1), 6),
-            ('LINEBELOW', (0, 0), (-1, 0), 1.5, colors.HexColor('#9333ea')),
-            ('LINEABOVE', (4, -1), (5, -1), 1.5, colors.HexColor('#9333ea')),
+            ('LINEBELOW', (0, 0), (-1, 0), 1.5, colors.HexColor('#C5A059')),
+            ('LINEABOVE', (4, -1), (5, -1), 1.5, colors.HexColor('#C5A059')),
             ('BACKGROUND', (4, -1), (5, -1), colors.HexColor('#faf5ff')),
         ]))
         story.append(items_table)
