@@ -22,55 +22,62 @@
   <div class="container">
     <!-- Catalog Header -->
     <div class="catalog-header">
-      <div class="catalog-title-group">
-        <span class="catalog-pretitle">Handcrafted & Modest Wear</span>
+      <div class="catalog-title-wrap">
+        <span class="catalog-kicker">Curated Boutique Catalog</span>
         <h2 class="catalog-title">
           @if (selectedCategory() === 'All') {
-            Featured Boutique Catalog
+            Signature Collections
           } @else {
             {{ selectedCategory() }}
           }
         </h2>
+        <div class="catalog-gold-divider"></div>
       </div>
 
-      <!-- Controls Row: Filter Chips, Search, & Sort -->
-      <div class="catalog-controls-bar">
-        <!-- Filter Chips -->
-        <div class="category-chips">
+      <!-- 1. Dedicated Category Filter Navigation (Clean, Centered, Elegant Pills - No Messy Emojis) -->
+      <nav class="catalog-tabs-nav" aria-label="Collections Filter">
+        <div class="category-tabs-track">
           @for (cat of categories; track cat.id) {
             <button 
               type="button" 
-              class="chip-btn" 
+              class="category-tab-btn" 
               [class.active]="selectedCategory() === cat.id"
               (click)="onCategorySelect(cat.id)">
-              <span class="chip-icon">{{ cat.icon }}</span>
               <span>{{ cat.label }}</span>
             </button>
           }
         </div>
+      </nav>
 
-        <div class="search-sort-group">
-          <!-- Search Bar -->
-          <div class="search-input-wrapper">
+      <!-- 2. Dedicated Utility Toolbar (Item Count, Search & Sort) -->
+      <div class="catalog-toolbar">
+        <div class="toolbar-item-count">
+          Showing <strong>{{ products().length }}</strong> {{ products().length === 1 ? 'curated piece' : 'curated pieces' }}
+        </div>
+
+        <div class="toolbar-actions">
+          <!-- Search Input -->
+          <div class="toolbar-search-wrap">
             <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
             <input 
               type="text" 
-              class="search-input" 
+              class="toolbar-search-input" 
               placeholder="Search lawn, farshi, hampers..."
               [ngModel]="searchQuery()" 
               (ngModelChange)="searchQuery.set($event); onSearchChange()"
             />
             @if (searchQuery()) {
-              <button type="button" class="clear-search-btn" (click)="searchQuery.set(''); onSearchChange()">×</button>
+              <button type="button" class="clear-search-btn" (click)="searchQuery.set(''); onSearchChange()" aria-label="Clear search">×</button>
             }
           </div>
 
           <!-- Sort Selector -->
-          <div class="sort-wrapper">
-            <select class="sort-select" [value]="selectedSort()" (change)="onSortChange($event)">
+          <div class="toolbar-sort-wrap">
+            <label class="sort-prefix-label" for="catalogSort">Sort:</label>
+            <select id="catalogSort" class="toolbar-sort-select" [value]="selectedSort()" (change)="onSortChange($event)">
               <option value="default">Featured</option>
               <option value="price_asc">Price: Low to High</option>
               <option value="price_desc">Price: High to Low</option>
@@ -89,7 +96,12 @@
       </div>
     } @else if (products().length === 0) {
       <div class="no-products-state">
-        <div class="empty-art">🔍</div>
+        <div class="empty-art">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </div>
         <h3>No items found</h3>
         <p>We couldn't find any products matching your search or filter. Try a different keyword or category.</p>
         <button type="button" class="btn btn-primary" (click)="selectedCategory.set('All'); searchQuery.set(''); fetchProducts()">
@@ -97,7 +109,7 @@
         </button>
       </div>
     } @else {
-      <div class="product-grid">
+      <div class="boutique-product-grid">
         @for (product of products(); track product.id) {
           <app-product-card 
             [product]="product" 
@@ -110,31 +122,31 @@
 </main>
 
 <!-- Instagram Brand Showcase Strip -->
-<section class="insta-showcase-section">
+<section class="atelier-insta-section">
   <div class="container">
-    <div class="insta-header">
-      <div class="insta-tagline">
-        <div class="insta-badge-wrap">
-          <span class="insta-badge">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-            </svg>
-            <span>Instagram Showcase</span>
-          </span>
-          <span class="insta-handle-pill">&#64;shaifystyles_</span>
+    <div class="atelier-insta-header">
+      <div class="atelier-insta-title-group">
+        <div class="atelier-insta-kicker">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+          <span>The Atelier Journal</span>
+          <span class="kicker-sep">•</span>
+          <span class="kicker-handle">&#64;shaifystyles_</span>
         </div>
-        <h3>Step Into Our Artisanal Studio</h3>
-        <p>Daily glimpses of hand-folded hijab bouquets, bridal heirloom hampers, and pure Pakistani lawn curation.</p>
+        <h3 class="atelier-insta-headline">Curated Moments from the Studio</h3>
+        <p class="atelier-insta-subline">Daily glimpses of hand-folded silk bouquets, bespoke bridal keepsakes, and heirloom Pakistani lawn curation.</p>
       </div>
+
       <a 
         href="https://instagram.com/shaifystyles_" 
         target="_blank" 
         rel="noopener noreferrer" 
-        class="insta-btn"
+        class="atelier-insta-follow-btn"
         title="Follow @shaifystyles_ on Instagram">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
           <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
           <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -143,80 +155,96 @@
       </a>
     </div>
 
-    <div class="insta-grid">
+    <div class="atelier-insta-grid">
+      <!-- 1. Hijab Bouquet -->
       <a 
         href="https://instagram.com/shaifystyles_" 
         target="_blank" 
         rel="noopener noreferrer" 
-        class="insta-card">
-        <img src="/assets/images/hijab_bouquet.jpg" alt="Shaify Styles Hijab Bouquet" onerror="this.src='https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=600&q=80'" />
-        <div class="insta-card-badge">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-          </svg>
-        </div>
-        <div class="insta-overlay">
-          <span class="insta-caption-pill">🌹 Blooming Rose Hijab Bouquet</span>
-          <span class="insta-action-hint">View on Instagram ↗</span>
+        class="atelier-insta-card">
+        <div class="insta-media-frame">
+          <img src="/assets/images/hijab_bouquet.jpg" alt="Handmade Rose Hijab Bouquet" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=600&q=80'" />
+          <div class="atelier-insta-overlay">
+            <div class="overlay-insta-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+            </div>
+            <span class="overlay-tag">Handcrafted</span>
+            <span class="overlay-title">Rose Hijab Bouquet</span>
+            <span class="overlay-link">View Post &rarr;</span>
+          </div>
         </div>
       </a>
 
+      <!-- 2. Gift Hamper -->
       <a 
         href="https://instagram.com/shaifystyles_" 
         target="_blank" 
         rel="noopener noreferrer" 
-        class="insta-card">
-        <img src="/assets/images/gift_hamper.jpg" alt="Shaify Styles Custom Hamper" onerror="this.src='https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=600&q=80'" />
-        <div class="insta-card-badge">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-          </svg>
-        </div>
-        <div class="insta-overlay">
-          <span class="insta-caption-pill">🎁 Bespoke Bride Keepsake Box</span>
-          <span class="insta-action-hint">View on Instagram ↗</span>
+        class="atelier-insta-card">
+        <div class="insta-media-frame">
+          <img src="/assets/images/gift_hamper.jpg" alt="Bespoke Bridal Keepsake Trunk" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=600&q=80'" />
+          <div class="atelier-insta-overlay">
+            <div class="overlay-insta-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+            </div>
+            <span class="overlay-tag">Bespoke</span>
+            <span class="overlay-title">Bridal Keepsake Trunk</span>
+            <span class="overlay-link">View Post &rarr;</span>
+          </div>
         </div>
       </a>
 
+      <!-- 3. Lawn Suit -->
       <a 
         href="https://instagram.com/shaifystyles_" 
         target="_blank" 
         rel="noopener noreferrer" 
-        class="insta-card">
-        <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80" alt="Embroidered Lawn Suit" />
-        <div class="insta-card-badge">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-          </svg>
-        </div>
-        <div class="insta-overlay">
-          <span class="insta-caption-pill">👗 Luxury Chiffon Lawn Suit</span>
-          <span class="insta-action-hint">View on Instagram ↗</span>
+        class="atelier-insta-card">
+        <div class="insta-media-frame">
+          <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80" alt="Embroidered Lawn Couture" loading="lazy" />
+          <div class="atelier-insta-overlay">
+            <div class="overlay-insta-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+            </div>
+            <span class="overlay-tag">Couture</span>
+            <span class="overlay-title">Embroidered Lawn Suit</span>
+            <span class="overlay-link">View Post &rarr;</span>
+          </div>
         </div>
       </a>
 
+      <!-- 4. Studio Showcase -->
       <a 
         href="https://instagram.com/shaifystyles_" 
         target="_blank" 
         rel="noopener noreferrer" 
-        class="insta-card">
-        <img src="/assets/images/hero_banner.jpg" alt="Shaify Styles Studio" onerror="this.src='https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=600&q=80'" />
-        <div class="insta-card-badge">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-          </svg>
-        </div>
-        <div class="insta-overlay">
-          <span class="insta-caption-pill">✨ Studio Curation & Orders</span>
-          <span class="insta-action-hint">View on Instagram ↗</span>
+        class="atelier-insta-card">
+        <div class="insta-media-frame">
+          <img src="/assets/images/hero_luxury_showcase.jpg" alt="Shaify Styles Studio Showcase" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=600&q=80'" />
+          <div class="atelier-insta-overlay">
+            <div class="overlay-insta-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+            </div>
+            <span class="overlay-tag">Studio</span>
+            <span class="overlay-title">Atelier Curation & Drops</span>
+            <span class="overlay-link">View Post &rarr;</span>
+          </div>
         </div>
       </a>
     </div>

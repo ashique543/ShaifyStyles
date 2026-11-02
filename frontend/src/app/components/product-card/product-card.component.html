@@ -1,39 +1,32 @@
-<article class="product-card" (click)="viewDetails.emit(product())">
-  <!-- Media Container -->
-  <div class="card-media">
+<article class="boutique-card" (click)="viewDetails.emit(product())">
+  <!-- Media Frame -->
+  <div class="card-media-frame">
     <img 
       [src]="product().image_url" 
       [alt]="product().title"
-      class="product-image"
+      class="card-img"
       loading="lazy"
       decoding="async"
       onerror="this.src='https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=600&q=80'"
     />
 
-    <!-- Badges Overlay -->
-    <div class="card-badges">
+    <!-- Minimalist Badges (Top Left / Right) -->
+    <div class="card-badge-row">
       @if (product().category === 'Hijab Bouquets') {
-        <span class="badge badge-seal" title="Handmade Bouquet">
-          <span class="seal-icon">🌹</span>
-          <span>Artisan</span>
-        </span>
+        <span class="card-pill pill-artisan">Handmade</span>
+      } @else if (product().badge) {
+        <span class="card-pill pill-highlight">{{ product().badge }}</span>
       }
-      @if (product().badge) {
-        <span class="badge badge-tag">{{ product().badge }}</span>
+
+      @if (discountPercentage() > 0) {
+        <span class="card-pill pill-discount">{{ discountPercentage() }}% OFF</span>
       }
     </div>
 
-    <!-- Discount Ribbon -->
-    @if (discountPercentage() > 0) {
-      <div class="badge-discount-tag">
-        <span>{{ discountPercentage() }}% OFF</span>
-      </div>
-    }
-
-    <!-- Quick View Overlay Button -->
-    <div class="media-hover-overlay">
-      <button type="button" class="quick-view-btn" (click)="$event.stopPropagation(); viewDetails.emit(product())">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <!-- Hover Action: Quick View -->
+    <div class="card-hover-action">
+      <button type="button" class="card-quick-view-btn" (click)="$event.stopPropagation(); viewDetails.emit(product())">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
           <circle cx="12" cy="12" r="3"></circle>
         </svg>
@@ -42,47 +35,47 @@
     </div>
   </div>
 
-  <!-- Content -->
-  <div class="card-body">
-    <div class="card-meta">
-      <span class="category-tag">{{ product().category }}</span>
+  <!-- Card Body -->
+  <div class="card-info">
+    <div class="card-category-row">
+      <span class="card-cat-name">{{ product().category }}</span>
       @if (product().stock <= 5 && product().stock > 0) {
-        <span class="stock-warning">Only {{ product().stock }} left</span>
+        <span class="card-stock-pill">Only {{ product().stock }} left</span>
       }
     </div>
 
-    <h3 class="product-title" [title]="product().title">{{ product().title }}</h3>
+    <h3 class="card-item-title" [title]="product().title">{{ product().title }}</h3>
 
     @if (product().fabric) {
-      <p class="product-fabric">
+      <div class="card-fabric-line">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
           <line x1="16" y1="8" x2="2" y2="22"></line>
           <line x1="17.5" y1="15" x2="9" y2="15"></line>
         </svg>
-        <span>{{ product().fabric }}</span>
-      </p>
+        <span class="fabric-text">{{ product().fabric }}</span>
+      </div>
     }
 
-    <!-- Price Section -->
-    <div class="price-row">
-      <div class="price-group">
-        <span class="current-price">₹{{ (product().discounted_price ?? product().price) | number:'1.0-0' }}</span>
+    <!-- Pricing Row (Pinned above button) -->
+    <div class="card-pricing-row">
+      <div class="pricing-numbers">
+        <span class="price-val">₹{{ (product().discounted_price ?? product().price) | number:'1.0-0' }}</span>
         @if (product().discounted_price) {
-          <span class="original-price">₹{{ product().price | number:'1.0-0' }}</span>
+          <span class="strikethrough-val">₹{{ product().price | number:'1.0-0' }}</span>
         }
       </div>
       @if (product().sizes && product().sizes.length > 0) {
-        <span class="sizes-hint">{{ product().sizes.length }} {{ product().sizes.length === 1 ? 'size' : 'sizes' }}</span>
+        <span class="sizes-indicator">{{ product().sizes.length }} {{ product().sizes.length === 1 ? 'size' : 'sizes' }}</span>
       }
     </div>
 
-    <!-- Action Row (Pinned to bottom) -->
-    <div class="card-actions" (click)="$event.stopPropagation()">
+    <!-- Add to Bag Action Button -->
+    <div class="card-cta-row" (click)="$event.stopPropagation()">
       <button 
         type="button" 
-        class="add-cart-btn"
-        [class.sold-out]="product().stock <= 0"
+        class="card-add-bag-btn"
+        [class.is-sold-out]="product().stock <= 0"
         [disabled]="product().stock <= 0"
         (click)="onQuickAdd()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
