@@ -1,13 +1,5 @@
 import { Routes } from '@angular/router';
 import { StorefrontComponent } from './pages/storefront/storefront.component';
-import { AdminLayoutComponent } from './admin/components/admin-layout.component';
-import { AdminLoginComponent } from './admin/pages/login/admin-login.component';
-import { AdminDashboardComponent } from './admin/pages/dashboard/admin-dashboard.component';
-import { AdminProductsComponent } from './admin/pages/products/admin-products.component';
-import { AdminOrdersComponent } from './admin/pages/orders/admin-orders.component';
-import { AdminCategoriesComponent } from './admin/pages/categories/admin-categories.component';
-import { AdminCouponsComponent } from './admin/pages/coupons/admin-coupons.component';
-import { AdminDeploymentComponent } from './admin/pages/deployment/admin-deployment.component';
 import { authGuard } from './admin/guards/auth.guard';
 
 export const routes: Routes = [
@@ -18,11 +10,11 @@ export const routes: Routes = [
   },
   {
     path: 'admin/login',
-    component: AdminLoginComponent
+    loadComponent: () => import('./admin/pages/login/admin-login.component').then(m => m.AdminLoginComponent)
   },
   {
     path: 'admin',
-    component: AdminLayoutComponent,
+    loadComponent: () => import('./admin/components/admin-layout.component').then(m => m.AdminLayoutComponent),
     canActivate: [authGuard],
     children: [
       {
@@ -32,27 +24,27 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
-        component: AdminDashboardComponent
+        loadComponent: () => import('./admin/pages/dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
       },
       {
         path: 'products',
-        component: AdminProductsComponent
+        loadComponent: () => import('./admin/pages/products/admin-products.component').then(m => m.AdminProductsComponent)
       },
       {
         path: 'categories',
-        component: AdminCategoriesComponent
+        loadComponent: () => import('./admin/pages/categories/admin-categories.component').then(m => m.AdminCategoriesComponent)
       },
       {
         path: 'coupons',
-        component: AdminCouponsComponent
+        loadComponent: () => import('./admin/pages/coupons/admin-coupons.component').then(m => m.AdminCouponsComponent)
       },
       {
         path: 'orders',
-        component: AdminOrdersComponent
+        loadComponent: () => import('./admin/pages/orders/admin-orders.component').then(m => m.AdminOrdersComponent)
       },
       {
         path: 'deployment',
-        component: AdminDeploymentComponent
+        loadComponent: () => import('./admin/pages/deployment/admin-deployment.component').then(m => m.AdminDeploymentComponent)
       }
     ]
   },
