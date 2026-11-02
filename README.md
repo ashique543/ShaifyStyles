@@ -289,21 +289,20 @@ The platform integrates the **Razorpay Payment Gateway**:
 
 ## 🚢 Production Deployment
 
-### Backend Deployment (Render / Railway / VPS)
-1. Set **Root Directory** to `backend`.
-2. Set **Build Command**: `pip install -r requirements.txt`.
-3. Set **Start Command**: `gunicorn -w 4 -b 0.0.0.0:$PORT "app:app"`.
-4. Configure environment variables:
-   - `DATABASE_URL`: PostgreSQL connection string (`postgresql://...`)
-   - `JWT_SECRET_KEY`: Long random secret string
-   - `RAZORPAY_KEY_ID` & `RAZORPAY_KEY_SECRET`: Live credentials
-   - `FLASK_ENV`: `production`
+For full step-by-step instructions with environment variable tables, Render PostgreSQL setup, and Vercel edge proxying, refer to the complete **[DEPLOYMENT.md](DEPLOYMENT.md)** guide.
 
-### Frontend Deployment (Vercel / Netlify / Cloudflare Pages)
-1. Set **Root Directory** to `frontend`.
-2. Set **Build Command**: `npm run build`.
-3. Set **Output Directory**: `dist/frontend/browser`.
-4. Ensure SPA rewrite rule (`/*` ➔ `/index.html`) is enabled for Angular routing.
+### Quick Reference:
+- **Backend (Render Web Service)**:
+  - **Root Directory**: `backend`
+  - **Build Command**: `pip install -r requirements.txt`
+  - **Start Command**: `gunicorn -w 4 -b 0.0.0.0:$PORT "app:app"`
+  - **Admin Creation**: `flask create-admin --username admin --email owner@shaifystyles.com`
+- **Frontend (Vercel)**:
+  - **Root Directory**: `frontend`
+  - **Framework Preset**: `Angular`
+  - **Build Command**: `npm run build`
+  - **Output Directory**: `dist/frontend/browser`
+  - **API Proxy**: Configured via `frontend/vercel.json` rewrites pointing to Render.
 
 ---
 
