@@ -122,7 +122,11 @@
             <!-- In Step 1: Promo Coupon Box placed neatly below items -->
             <div class="drawer-coupon-container">
               <div class="coupon-section-header">
-                <span>🎟️ Promotional Discount</span>
+                <svg class="section-icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                  <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                </svg>
+                <span>Promotional Discount</span>
               </div>
               @if (!appliedCoupon()) {
                 <div class="drawer-coupon-input-group">
@@ -144,7 +148,12 @@
               } @else {
                 <div class="drawer-coupon-applied-box">
                   <div class="coupon-tag-info">
-                    <span class="coupon-code-badge">🎟️ {{ appliedCoupon().code }} Applied</span>
+                    <span class="coupon-code-badge">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      <span>{{ appliedCoupon().code }} Applied</span>
+                    </span>
                     <span class="coupon-discount-text">-₹{{ couponDiscount() | number:'1.0-0' }} OFF</span>
                   </div>
                   <button type="button" (click)="removeCoupon()" class="drawer-coupon-remove-btn" title="Remove coupon">✕</button>
@@ -162,7 +171,10 @@
               <!-- Contact Information Card -->
               <div class="form-section-card">
                 <div class="form-section-title">
-                  <span class="section-icon">👤</span>
+                  <svg class="section-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
                   <span>Contact Information</span>
                 </div>
 
@@ -171,9 +183,9 @@
                   <input type="text" [(ngModel)]="customerName" name="customerName" placeholder="e.g. Aisha Khan" required />
                 </div>
 
-                <div class="form-row">
+                <div class="form-row form-row-contact">
                   <div class="form-group">
-                    <label>WhatsApp / Phone *</label>
+                    <label>WhatsApp / Mobile *</label>
                     <input type="tel" [(ngModel)]="customerPhone" name="customerPhone" placeholder="10-digit mobile" required />
                   </div>
                   <div class="form-group">
@@ -186,7 +198,10 @@
               <!-- Delivery Address Card -->
               <div class="form-section-card">
                 <div class="form-section-title">
-                  <span class="section-icon">📍</span>
+                  <svg class="section-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
                   <span>Delivery Address (Pan-India)</span>
                 </div>
 
@@ -195,7 +210,7 @@
                   <input type="text" [(ngModel)]="shippingStreet" name="shippingStreet" placeholder="e.g. Flat 301, Rose Residency, Bandra West" required />
                 </div>
 
-                <div class="form-row">
+                <div class="form-row form-row-location">
                   <div class="form-group">
                     <label>City *</label>
                     <input type="text" [(ngModel)]="shippingCity" name="shippingCity" placeholder="Mumbai" required />
@@ -287,7 +302,12 @@
 
               @if (errorMessage()) {
                 <div class="error-banner">
-                  ⚠️ {{ errorMessage() }}
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                  </svg>
+                  <span>{{ errorMessage() }}</span>
                 </div>
               }
             </form>

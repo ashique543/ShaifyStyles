@@ -8481,3 +8481,428 @@ app-product-card {
     height: 220px !important;
   }
 }
+
+
+/* ==========================================================================
+   CHECKOUT DRAWER PERFECT ALIGNMENT & ZERO MOBILE OVERFLOW ARCHITECTURE
+   Guarantees all contact, shipping, and payment fields remain 100% inside
+   the viewport without squeezing, clipping, or triggering iOS auto-zoom.
+   ========================================================================== */
+
+/* 1. Global Box-Sizing & Viewport Clamping for Drawer */
+.drawer-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1000 !important;
+  overflow: hidden !important;
+}
+
+.cart-drawer {
+  width: 100% !important;
+  max-width: 500px !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.drawer-header {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+}
+
+.drawer-step-nav {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+}
+
+.step-tab-btn {
+  min-width: 0 !important;
+}
+
+.step-tab-btn span {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* 2. Scrollable Drawer Content Container */
+.drawer-content {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding: 1.25rem 1.5rem 2.5rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1.15rem !important;
+}
+
+/* 3. Form Cards & Structure */
+.shipping-form {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1rem !important;
+}
+
+.form-section-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  padding: 1.15rem 1.25rem !important;
+  background: #171622 !important;
+  border: 1px solid rgba(197, 160, 89, 0.22) !important;
+  border-radius: 14px !important;
+}
+
+.form-section-title {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  font-size: 0.82rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: #DFC07F !important;
+  font-weight: 700 !important;
+  margin-bottom: 0.95rem !important;
+  padding-bottom: 0.45rem !important;
+  border-bottom: 1px solid rgba(197, 160, 89, 0.18) !important;
+}
+
+.form-section-title .section-icon-svg {
+  color: #C5A059 !important;
+  flex-shrink: 0 !important;
+}
+
+/* 4. Form Groups, Labels & Inputs Alignment */
+.form-group {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.35rem !important;
+  margin-bottom: 0.85rem !important;
+}
+
+.form-group:last-child {
+  margin-bottom: 0 !important;
+}
+
+.form-group label {
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  color: #E2DACF !important;
+  display: block !important;
+  width: 100% !important;
+  letter-spacing: 0.01em !important;
+}
+
+.form-group input, 
+.form-group textarea,
+.drawer-coupon-input {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  height: 44px !important;
+  padding: 0 0.9rem !important;
+  border-radius: 9px !important;
+  background: #121118 !important;
+  border: 1.5px solid rgba(197, 160, 89, 0.28) !important;
+  color: #FAF7F2 !important;
+  font-size: 15px !important;
+  transition: all 0.2s ease !important;
+  outline: none !important;
+}
+
+.form-group input::placeholder, 
+.form-group textarea::placeholder,
+.drawer-coupon-input::placeholder {
+  color: #7A726A !important;
+  font-size: 0.88rem !important;
+}
+
+.form-group textarea {
+  height: auto !important;
+  min-height: 72px !important;
+  padding: 0.65rem 0.9rem !important;
+  resize: vertical !important;
+  line-height: 1.45 !important;
+}
+
+.form-group input:focus, 
+.form-group textarea:focus,
+.drawer-coupon-input:focus {
+  border-color: #C5A059 !important;
+  background: #181722 !important;
+  box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.2) !important;
+}
+
+/* 5. Responsive Form Rows */
+.form-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 0.85rem !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-bottom: 0.85rem !important;
+}
+
+.form-row:last-child {
+  margin-bottom: 0 !important;
+}
+
+.form-row .form-group {
+  margin-bottom: 0 !important;
+}
+
+/* 6. Step 2 Summary & Trust Badges */
+.order-review-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  background: #171622 !important;
+}
+
+.inline-summary-rows {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.45rem !important;
+  width: 100% !important;
+}
+
+.inline-summary-rows .summary-line {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  font-size: 0.86rem !important;
+  color: #C8BFB3 !important;
+  width: 100% !important;
+}
+
+.inline-total-line {
+  border-top: 1px dashed rgba(197, 160, 89, 0.25) !important;
+  padding-top: 0.5rem !important;
+  margin-top: 0.25rem !important;
+  font-weight: 700 !important;
+}
+
+.inline-total-val {
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  color: #DFC07F !important;
+}
+
+.payment-badge-box {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  background: #15141D !important;
+  padding: 0.85rem 1rem !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(197, 160, 89, 0.2) !important;
+}
+
+.rzp-brand-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 0.4rem !important;
+  margin-bottom: 0.35rem !important;
+}
+
+.rzp-desc {
+  font-size: 0.78rem !important;
+  color: #9E958B !important;
+  line-height: 1.45 !important;
+}
+
+/* 7. Step 2 Slim Sticky Footer */
+.drawer-footer-compact {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 0.75rem 1.25rem !important;
+  min-height: 66px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0.85rem !important;
+  background: #181722 !important;
+  border-top: 1.5px solid rgba(197, 160, 89, 0.3) !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.75) !important;
+  overflow: hidden !important;
+}
+
+.compact-total-block {
+  min-width: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.compact-amount {
+  font-family: var(--font-sans) !important;
+  font-size: 1.35rem !important;
+  font-weight: 800 !important;
+  color: #DFC07F !important;
+  line-height: 1 !important;
+}
+
+.compact-pay-btn {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: 230px !important;
+  height: 44px !important;
+  padding: 0 1rem !important;
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  border-radius: 9999px !important;
+  background: linear-gradient(135deg, #DFC07F 0%, #C5A059 100%) !important;
+  color: #0C0B0E !important;
+  border: 1px solid #F5DEB3 !important;
+  box-shadow: 0 4px 16px rgba(197, 160, 89, 0.4) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+}
+
+/* ── 8. MOBILE CHECKOUT PRECISION (<= 768px and <= 480px) ──────────────── */
+@media (max-width: 768px) {
+  .cart-drawer {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    border-left: none !important;
+  }
+
+  .drawer-content {
+    padding: 1rem 1rem 2rem !important;
+  }
+
+  .drawer-step-nav {
+    padding: 0.6rem 1rem !important;
+    gap: 0.5rem !important;
+  }
+
+  /* Form inputs font-size 16px to prevent iOS Safari auto-zoom blowout */
+  .form-group input, 
+  .form-group textarea,
+  .drawer-coupon-input {
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  /* Phone and Email stack into 100% full width rows */
+  .form-row-contact {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.85rem !important;
+  }
+
+  /* City and Pin Code remain neatly side-by-side with strict width constraints */
+  .form-row-location {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr) !important;
+    gap: 0.65rem !important;
+  }
+
+  .form-section-card {
+    padding: 1rem 0.85rem !important;
+  }
+
+  .drawer-footer-compact {
+    padding: 0.65rem 1rem !important;
+    gap: 0.65rem !important;
+  }
+
+  .compact-amount {
+    font-size: 1.2rem !important;
+  }
+
+  .compact-pay-btn {
+    font-size: 0.86rem !important;
+    padding: 0 0.75rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .drawer-content {
+    padding: 0.85rem 0.75rem 2rem !important;
+  }
+
+  /* On ultra-compact screens, City and PIN Code also stack */
+  .form-row-location {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.85rem !important;
+  }
+
+  .form-section-card {
+    padding: 0.85rem 0.75rem !important;
+  }
+
+  .drawer-footer-compact {
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  .compact-amount {
+    font-size: 1.1rem !important;
+  }
+
+  .compact-pay-btn {
+    font-size: 0.8rem !important;
+    padding: 0 0.5rem !important;
+  }
+}
+
+/* Error Banner & Modal Mobile Sizing Protection */
+.error-banner {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+  color: #FCA5A5 !important;
+  padding: 0.65rem 0.85rem !important;
+  border-radius: 8px !important;
+  font-size: 0.82rem !important;
+  font-weight: 500 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+}
+
+.error-banner svg {
+  color: #EF4444 !important;
+  flex-shrink: 0 !important;
+}
+
+@media (max-width: 480px) {
+  .auth-modal-card, .orders-modal-card, .receipt-dialog {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+    padding: 1.25rem 1rem !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+}
