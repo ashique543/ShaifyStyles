@@ -815,88 +815,227 @@ img {
 .no-products-state h3 { font-size: 1.4rem; color: #FAF7F2; }
 .no-products-state p { max-width: 440px; font-size: 0.95rem; margin-bottom: 0.5rem; }
 
-/* Instagram Showcase Section */
+/* ==========================================================================
+   CUSTOMER STOREFRONT: INSTAGRAM GALLERY (ROYAL OBSIDIAN & CHAMPAGNE GOLD)
+   ========================================================================== */
 .insta-showcase-section {
-  background: #FAF3E6;
-  padding: 4.5rem 0;
-  border-top: 1px solid #E8DFD8;
-  border-bottom: 1px solid rgba(197, 160, 89, 0.22);
-}
-.insta-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-.insta-badge {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #A37E36;
-  font-weight: 700;
-  display: block;
-  margin-bottom: 0.35rem;
-}
-.insta-tagline h3 {
-  font-size: 1.8rem;
-  color: #FAF7F2;
-  margin-bottom: 0.35rem;
-}
-.insta-tagline p {
-  color: #D1C8BC;
-  font-size: 0.95rem;
-  max-width: 600px;
-}
-.insta-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: var(--radius-full);
-}
-.insta-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-}
-.insta-card {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  height: 280px;
-  box-shadow: 0 6px 18px rgba(37, 32, 33, 0.08);
-}
-.insta-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-.insta-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(37, 32, 33, 0.8) 0%, rgba(37, 32, 33, 0) 50%);
-  display: flex;
-  align-items: flex-end;
-  padding: 1rem;
-  color: #FFFFFF;
-  font-size: 0.85rem;
-  font-weight: 600;
-  opacity: 0.95;
-  transition: opacity 0.3s;
-}
-.insta-card:hover img { transform: scale(1.06); }
-@media (max-width: 900px) { .insta-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 600px) {
-  .catalog-controls-bar { flex-direction: column; align-items: stretch; }
-  .search-input-wrapper { width: 100%; }
-  .search-sort-group { flex-direction: column; width: 100%; }
-  .sort-select { width: 100%; }
-  .insta-grid { grid-template-columns: 1fr; }
-  .catalog-title { font-size: 1.8rem; }
+  background: radial-gradient(ellipse at 50% 0%, #1A1824 0%, #0F0E14 60%, #09080B 100%) !important;
+  padding: 5rem 0 !important;
+  border-top: 1px solid rgba(197, 160, 89, 0.28) !important;
+  border-bottom: 1px solid rgba(197, 160, 89, 0.22) !important;
+  position: relative !important;
+  overflow: hidden !important;
 }
 
+.insta-showcase-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #C5A059, #DFC07F, #C5A059, transparent);
+  box-shadow: 0 0 16px rgba(197, 160, 89, 0.5);
+}
+
+.insta-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+  flex-wrap: wrap !important;
+  gap: 1.5rem !important;
+  margin-bottom: 2.5rem !important;
+}
+
+.insta-badge-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  flex-wrap: wrap !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.insta-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  font-size: 0.74rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  color: #DFC07F !important;
+  background: rgba(197, 160, 89, 0.12) !important;
+  border: 1px solid rgba(197, 160, 89, 0.35) !important;
+  padding: 0.3rem 0.85rem !important;
+  border-radius: 9999px !important;
+  font-weight: 700 !important;
+}
+
+.insta-handle-pill {
+  font-size: 0.8rem !important;
+  color: #FAF7F2 !important;
+  font-weight: 600 !important;
+  background: #1B1A24 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 0.28rem 0.75rem !important;
+  border-radius: 9999px !important;
+  letter-spacing: 0.02em !important;
+}
+
+.insta-tagline h3 {
+  font-family: var(--font-serif) !important;
+  font-size: clamp(1.6rem, 3.5vw, 2.35rem) !important;
+  color: #FAF7F2 !important;
+  line-height: 1.2 !important;
+  margin-bottom: 0.45rem !important;
+  letter-spacing: -0.01em !important;
+}
+
+.insta-tagline p {
+  color: #C8BFB3 !important;
+  font-size: 0.95rem !important;
+  line-height: 1.6 !important;
+  max-width: 620px !important;
+}
+
+.insta-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.6rem !important;
+  padding: 0.75rem 1.6rem !important;
+  border-radius: 9999px !important;
+  background: linear-gradient(135deg, #1C1B24 0%, #15141A 100%) !important;
+  color: #FAF7F2 !important;
+  border: 1.5px solid #C5A059 !important;
+  font-size: 0.92rem !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 12px rgba(197, 160, 89, 0.15) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+}
+
+.insta-btn:hover {
+  background: linear-gradient(135deg, #C5A059 0%, #DFC07F 100%) !important;
+  color: #0C0B0E !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(197, 160, 89, 0.45) !important;
+}
+
+.insta-btn svg {
+  color: #DFC07F !important;
+  transition: color 0.3s ease !important;
+}
+
+.insta-btn:hover svg {
+  color: #0C0B0E !important;
+}
+
+.insta-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.25rem !important;
+}
+
+.insta-card {
+  position: relative !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  height: 290px !important;
+  background: #16151D !important;
+  border: 1.5px solid rgba(197, 160, 89, 0.22) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(197, 160, 89, 0.08) !important;
+  display: block !important;
+  text-decoration: none !important;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.insta-card img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.insta-card-badge {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  background: rgba(12, 11, 14, 0.75) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(197, 160, 89, 0.4) !important;
+  color: #DFC07F !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 2 !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.3s ease !important;
+}
+
+.insta-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(to top, rgba(10, 9, 13, 0.95) 0%, rgba(10, 9, 13, 0.55) 45%, rgba(10, 9, 13, 0.05) 100%) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  gap: 0.35rem !important;
+  padding: 1.25rem !important;
+  opacity: 0.92 !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  z-index: 1 !important;
+}
+
+.insta-caption-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  color: #FAF7F2 !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.insta-action-hint {
+  font-size: 0.72rem !important;
+  color: #DFC07F !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  opacity: 0.85 !important;
+  transition: opacity 0.2s ease !important;
+}
+
+.insta-card:hover {
+  border-color: #C5A059 !important;
+  transform: translateY(-5px) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85), 0 0 24px rgba(197, 160, 89, 0.35) !important;
+}
+
+.insta-card:hover img {
+  transform: scale(1.08) !important;
+}
+
+.insta-card:hover .insta-card-badge {
+  background: #C5A059 !important;
+  color: #0C0B0E !important;
+  transform: rotate(15deg) scale(1.1) !important;
+}
+
+.insta-card:hover .insta-overlay {
+  opacity: 1 !important;
+  background: linear-gradient(to top, rgba(10, 9, 13, 0.98) 0%, rgba(10, 9, 13, 0.65) 55%, rgba(10, 9, 13, 0.15) 100%) !important;
+}
+
+.insta-card:hover .insta-action-hint {
+  opacity: 1 !important;
+  color: #F5DEB3 !important;
+}
 /* ==========================================================================
    CUSTOMER STOREFRONT: PRODUCT CARD
    ========================================================================== */
@@ -5538,4 +5677,627 @@ select option:hover, select option:checked {
   display: block !important;
   border-radius: 22px !important;
   background: #0C0B0E !important;
+}
+
+/* ==========================================================================
+   COMPREHENSIVE FULL-APPLICATION MOBILE RESPONSIVENESS SYSTEM
+   Engineered for smooth, high-end shopping across all mobile devices
+   (iPhone, Galaxy, Pixel, iPads & Android Tablets: 320px - 1024px)
+   ========================================================================== */
+
+/* 1. Global Viewport & Mobile Reset */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100% !important;
+  position: relative !important;
+  -webkit-text-size-adjust: 100% !important;
+}
+
+/* Touch Friendly Targets */
+button, a, input, select, textarea {
+  touch-action: manipulation;
+}
+
+/* Prevent iOS Safari Automatic Zoom on Inputs */
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  font-size: 16px !important;
+}
+
+/* 2. Tablet Breakpoint (max-width: 992px) */
+@media (max-width: 992px) {
+  .hero-container {
+    grid-template-columns: 1fr !important;
+    gap: 2.5rem !important;
+    text-align: left !important;
+  }
+  .hero-img {
+    height: 380px !important;
+  }
+  .insta-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.15rem !important;
+  }
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+    gap: 1.25rem !important;
+  }
+  .admin-layout-shell {
+    flex-direction: column !important;
+  }
+  .admin-sidebar {
+    width: 100% !important;
+    height: auto !important;
+    position: static !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(197, 160, 89, 0.22) !important;
+  }
+  .sidebar-nav {
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    padding: 0.5rem 1rem !important;
+    gap: 0.5rem !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .nav-item {
+    white-space: nowrap !important;
+    padding: 0.5rem 0.85rem !important;
+  }
+}
+
+/* 3. Phablet & Mobile Landscape (max-width: 768px) */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem !important;
+  }
+  
+  /* Top Announcement Bar */
+  .announcement-bar {
+    padding: 0.4rem 0.75rem !important;
+    justify-content: center !important;
+    text-align: center !important;
+    font-size: 0.74rem !important;
+  }
+  .announcement-actions {
+    display: none !important;
+  }
+  .announcement-content {
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 0.35rem 0.6rem !important;
+  }
+  .announcement-content .divider {
+    opacity: 0.5 !important;
+  }
+
+  /* Main Header */
+  .main-header {
+    height: 70px !important;
+  }
+  .header-container {
+    height: 70px !important;
+    padding: 0 0.85rem !important;
+  }
+  .brand-logo-frame {
+    width: 42px !important;
+    height: 42px !important;
+  }
+  .brand-title {
+    font-size: 1.35rem !important;
+  }
+  .brand-arabic-badge {
+    font-size: 0.85rem !important;
+    padding: 0.05rem 0.45rem !important;
+  }
+  .nav-links {
+    display: none !important;
+  }
+  
+  /* Hero Section */
+  .hero-section {
+    padding: 2.75rem 0 2.25rem !important;
+  }
+  .hero-title {
+    font-size: clamp(1.85rem, 6.5vw, 2.4rem) !important;
+    line-height: 1.22 !important;
+  }
+  .hero-subtitle {
+    font-size: 0.96rem !important;
+    line-height: 1.55 !important;
+  }
+  .hero-cta-group {
+    gap: 0.75rem !important;
+    width: 100% !important;
+  }
+  .hero-btn {
+    padding: 0.8rem 1.4rem !important;
+    font-size: 0.92rem !important;
+  }
+  .hero-img {
+    height: 320px !important;
+  }
+  .floating-badge {
+    padding: 0.55rem 0.85rem !important;
+  }
+  .top-badge {
+    top: 14px !important;
+    left: 14px !important;
+  }
+  .bottom-badge {
+    bottom: 14px !important;
+    right: 14px !important;
+  }
+
+  /* Catalog Controls Bar & Horizontal Category Chips */
+  .catalog-controls-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 1rem !important;
+    padding: 1rem !important;
+    border-radius: 14px !important;
+  }
+  .category-chips {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 6px !important;
+    gap: 0.5rem !important;
+    scrollbar-width: none !important;
+  }
+  .category-chips::-webkit-scrollbar {
+    display: none !important;
+  }
+  .chip-btn {
+    flex-shrink: 0 !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.84rem !important;
+  }
+  .search-sort-group {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 0.65rem !important;
+  }
+  .search-input-wrapper {
+    flex: 1 !important;
+    min-width: 0 !important;
+    width: auto !important;
+  }
+  .sort-wrapper {
+    min-width: 135px !important;
+    flex-shrink: 0 !important;
+  }
+  .sort-select {
+    width: 100% !important;
+    font-size: 0.82rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  /* 2-Column High-End Product Grid */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.85rem !important;
+  }
+  .product-card {
+    border-radius: 14px !important;
+  }
+  .card-media {
+    height: 220px !important;
+  }
+  .card-body {
+    padding: 0.85rem !important;
+  }
+  .product-title {
+    font-size: 0.92rem !important;
+    line-height: 1.3 !important;
+    height: 2.6em !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+  .product-fabric {
+    font-size: 0.75rem !important;
+  }
+  .price-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.25rem !important;
+  }
+  .current-price {
+    font-size: 1.1rem !important;
+  }
+  .original-price {
+    font-size: 0.82rem !important;
+  }
+  .sizes-hint {
+    display: none !important;
+  }
+  .add-cart-btn {
+    height: 40px !important;
+    font-size: 0.85rem !important;
+    padding: 0 0.75rem !important;
+  }
+
+  /* Instagram Showcase Section */
+  .insta-showcase-section {
+    padding: 3.5rem 0 !important;
+  }
+  .insta-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1.25rem !important;
+    margin-bottom: 1.75rem !important;
+  }
+  .insta-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  .insta-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.85rem !important;
+  }
+  .insta-card {
+    height: 200px !important;
+    border-radius: 14px !important;
+  }
+  .insta-overlay {
+    padding: 0.85rem !important;
+  }
+  .insta-caption-pill {
+    font-size: 0.78rem !important;
+  }
+  .insta-action-hint {
+    font-size: 0.68rem !important;
+  }
+
+  /* Cart Drawer Full-Screen Mobile Adaptation */
+  .cart-drawer {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100% !important;
+    border-left: none !important;
+  }
+  .drawer-header {
+    padding: 1rem 1.15rem !important;
+  }
+  .shipping-tracker {
+    padding: 0.65rem 1.15rem !important;
+  }
+  .drawer-step-nav {
+    padding: 0.6rem 1.15rem !important;
+    gap: 0.5rem !important;
+  }
+  .step-tab-btn {
+    padding: 0.45rem 0.65rem !important;
+    font-size: 0.78rem !important;
+  }
+  .drawer-content {
+    padding: 1.15rem 1.15rem 2.5rem !important;
+  }
+  .cart-item-card {
+    padding: 0.85rem !important;
+    gap: 0.85rem !important;
+  }
+  .cart-item-card img, .item-img-wrap {
+    width: 68px !important;
+    height: 68px !important;
+    border-radius: 10px !important;
+  }
+  .item-title {
+    font-size: 0.88rem !important;
+  }
+  .drawer-footer-compact {
+    padding: 0.65rem 1.15rem !important;
+    height: 66px !important;
+  }
+
+  /* Modals: Mobile Friendly Sizing */
+  .modal-overlay {
+    padding: 0.5rem !important;
+    align-items: flex-end !important;
+  }
+  .modal-container, .product-modal, .auth-modal, .orders-modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92vh !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 1.5rem 1.15rem !important;
+  }
+  .modal-grid {
+    grid-template-columns: 1fr !important;
+    padding: 0 !important;
+    gap: 1.25rem !important;
+  }
+  .image-frame {
+    height: 260px !important;
+  }
+
+  /* Footer */
+  .boutique-footer {
+    padding: 3.5rem 0 1.5rem !important;
+  }
+  .footer-container {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+  .bottom-container {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 0.75rem !important;
+  }
+}
+
+/* 4. Small Smartphones (max-width: 480px) */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 0.75rem !important;
+  }
+  
+  /* Brand Logo & Header Sizing */
+  .main-header {
+    height: 64px !important;
+  }
+  .header-container {
+    height: 64px !important;
+    padding: 0 0.65rem !important;
+  }
+  .brand-logo-frame {
+    width: 38px !important;
+    height: 38px !important;
+  }
+  .brand-title {
+    font-size: 1.2rem !important;
+  }
+  .brand-tagline {
+    display: none !important;
+  }
+  .brand-arabic-badge {
+    font-size: 0.76rem !important;
+    padding: 0.02rem 0.4rem !important;
+  }
+  
+  /* Header Action Buttons */
+  .auth-nav-btn {
+    padding: 0.4rem 0.7rem !important;
+    font-size: 0.8rem !important;
+  }
+  .auth-nav-btn span {
+    display: none !important;
+  }
+  .cart-toggle-btn {
+    padding: 0.45rem 0.8rem !important;
+  }
+  .cart-toggle-btn .cart-label {
+    display: none !important;
+  }
+  .cart-badge {
+    top: -6px !important;
+    right: -6px !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    font-size: 0.7rem !important;
+  }
+
+  /* Hero Adjustments */
+  .hero-section {
+    padding: 2.25rem 0 1.75rem !important;
+  }
+  .hero-pill {
+    font-size: 0.74rem !important;
+    padding: 0.25rem 0.65rem !important;
+  }
+  .hero-pill-logo {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .pill-arabic {
+    font-size: 0.78rem !important;
+  }
+  .hero-title {
+    font-size: 1.75rem !important;
+  }
+  .hero-subtitle {
+    font-size: 0.88rem !important;
+  }
+  .hero-features {
+    gap: 0.4rem !important;
+  }
+  .feature-item {
+    font-size: 0.76rem !important;
+    padding: 0.25rem 0.6rem !important;
+  }
+  .hero-cta-group {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .hero-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 0.8rem 1rem !important;
+  }
+  .hero-stats {
+    gap: 0.35rem !important;
+    justify-content: space-between !important;
+    padding-top: 0.85rem !important;
+  }
+  .stat-number {
+    font-size: 1.15rem !important;
+  }
+  .stat-label {
+    font-size: 0.68rem !important;
+  }
+  .hero-img {
+    height: 250px !important;
+  }
+  .floating-badge {
+    padding: 0.4rem 0.65rem !important;
+    border-radius: 12px !important;
+  }
+  .floating-badge strong {
+    font-size: 0.75rem !important;
+  }
+  .floating-badge span {
+    font-size: 0.68rem !important;
+  }
+  .badge-mini-gif {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  .hero-animated-seal {
+    width: 50px !important;
+    height: 50px !important;
+    bottom: 12px !important;
+    left: 12px !important;
+  }
+  .animated-seal-gif {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  /* Catalog Controls Stack on Small Screens */
+  .catalog-controls-bar {
+    padding: 0.75rem !important;
+  }
+  .search-sort-group {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  .search-input-wrapper {
+    width: 100% !important;
+  }
+  .sort-wrapper {
+    width: 100% !important;
+  }
+  .sort-select {
+    width: 100% !important;
+  }
+
+  /* 2-Column Compact Product Grid */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.65rem !important;
+  }
+  .card-media {
+    height: 180px !important;
+  }
+  .card-body {
+    padding: 0.7rem !important;
+  }
+  .product-title {
+    font-size: 0.85rem !important;
+  }
+  .current-price {
+    font-size: 1rem !important;
+  }
+  .add-cart-btn {
+    height: 36px !important;
+    font-size: 0.8rem !important;
+    padding: 0 0.5rem !important;
+  }
+
+  /* Instagram Grid */
+  .insta-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.65rem !important;
+  }
+  .insta-card {
+    height: 165px !important;
+    border-radius: 12px !important;
+  }
+  .insta-card-badge {
+    top: 8px !important;
+    right: 8px !important;
+    width: 26px !important;
+    height: 26px !important;
+  }
+  .insta-card-badge svg {
+    width: 11px !important;
+    height: 11px !important;
+  }
+  .insta-overlay {
+    padding: 0.65rem !important;
+  }
+  .insta-caption-pill {
+    font-size: 0.72rem !important;
+  }
+  .insta-action-hint {
+    display: none !important;
+  }
+
+  /* Compact Cart Drawer */
+  .drawer-step-nav {
+    padding: 0.5rem 0.75rem !important;
+  }
+  .step-tab-btn {
+    padding: 0.4rem 0.5rem !important;
+    font-size: 0.72rem !important;
+  }
+  .drawer-content {
+    padding: 0.85rem 0.75rem 2.5rem !important;
+  }
+  .compact-pay-btn {
+    max-width: 170px !important;
+    font-size: 0.85rem !important;
+    padding: 0 0.85rem !important;
+  }
+  .compact-amount {
+    font-size: 1.15rem !important;
+  }
+}
+
+/* 5. Extra Small Devices (max-width: 360px) */
+@media (max-width: 360px) {
+  .product-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  .card-media {
+    height: 240px !important;
+  }
+  .insta-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .insta-card {
+    height: 220px !important;
+  }
+}
+
+/* 6. Admin Panel Mobile Optimizations */
+@media (max-width: 860px) {
+  .admin-page {
+    padding: 1rem !important;
+  }
+  .admin-page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+  .admin-metrics-grid, .deployment-status-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.85rem !important;
+  }
+  .table-responsive, .table-wrap, .admin-table-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    border-radius: 12px !important;
+  }
+  .admin-table {
+    min-width: 600px !important;
+  }
+}
+
+@media (max-width: 540px) {
+  .admin-metrics-grid, .deployment-status-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
